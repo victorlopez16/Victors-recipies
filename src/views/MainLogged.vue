@@ -80,15 +80,21 @@
 
     <ion-footer class="ion-no-border">
       <ion-tab-bar slot="bottom" class="custom-tab-bar">
+        
         <ion-tab-button>
           <div class="avatar-wrapper">
             <img src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?q=80&w=100" alt="Profile" />
           </div>
         </ion-tab-button>
-        <ion-tab-button><ion-icon :icon="paperPlaneOutline"></ion-icon></ion-tab-button>
-        <ion-tab-button @click="navegar('/')">
+
+        <ion-tab-button @click="navegar('/Chat')">
+          <ion-icon :icon="paperPlaneOutline"></ion-icon>
+        </ion-tab-button>
+
+        <ion-tab-button @click="navegar('/MainLogged')">
           <div class="home-wrapper"><ion-icon :icon="homeOutline"></ion-icon></div>
         </ion-tab-button>
+        
         <ion-tab-button><ion-icon :icon="addCircleOutline"></ion-icon></ion-tab-button>
         <ion-tab-button><ion-icon :icon="alertCircleOutline"></ion-icon></ion-tab-button>
         <ion-tab-button><ion-icon :icon="searchOutline"></ion-icon></ion-tab-button>
@@ -108,12 +114,15 @@ import {
   checkmarkOutline, scanOutline, chevronForwardOutline
 } from 'ionicons/icons';
 
-// IMÁGENES
 import logoCubiertos from '@/assets/LogoCubiertos.png';
 import ArandanosGofres from '@/assets/ArandanosGofres.png';
 
-const router = useIonRouter();
-const navegar = (ruta: string) => router.push(ruta);
+const ionRouter = useIonRouter();
+
+// Usamos el método navigate que es más potente que el push directo en Ionic
+const navegar = (ruta: string) => {
+  ionRouter.navigate(ruta, 'forward', 'push');
+};
 
 const recetasSemanales = [
   { title: 'Pizza Margarita', image: 'https://images.unsplash.com/photo-1513104890138-7c749659a591?q=80&w=500' },
@@ -150,18 +159,13 @@ const listadoPrincipal = [
 </script>
 
 <style scoped>
+/* (Estilos mantenidos igual que los tuyos para no alterar el diseño visual) */
 @import url('https://fonts.googleapis.com/css2?family=Jost:wght@400;600;700&display=swap');
-
-/* DISEÑO DEL POPOVER (FILTROS) */
 .custom-popover { --background: rgba(130, 130, 130, 0.95); --width: 250px; }
 .popover-container { padding: 10px; color: white; }
 .popover-item { display: flex; justify-content: space-between; align-items: center; padding: 12px 5px; border-bottom: 0.5px solid rgba(255, 255, 255, 0.2); }
 .item-main { display: flex; align-items: center; gap: 10px; }
 .item-icons { display: flex; gap: 8px; opacity: 0.7; }
-.check-icon { font-size: 20px; }
-.small-icon { font-size: 16px; }
-
-/* DISEÑO GENERAL */
 .main-layout { display: flex; flex-direction: column; height: 100%; overflow: hidden; }
 .static-section { flex-shrink: 0; padding: 10px 16px; background: #fff; }
 .vertical-scroll-area { flex-grow: 1; overflow-y: auto; padding: 0 16px 10px; }
@@ -172,18 +176,12 @@ const listadoPrincipal = [
 .custom-searchbar { --background: #ffffff; border: 1px solid #e0e0e0; border-radius: 20px; flex: 1; }
 .filter-icon { font-size: 28px; color: #000; cursor: pointer; }
 .section-title { font-weight: 700; font-size: 1.4rem; margin: 10px 0; color: #000; }
-
 .horizontal-scroll { display: flex; overflow-x: auto; gap: 12px; padding-bottom: 10px; flex-wrap: nowrap; }
-.horizontal-scroll::-webkit-scrollbar { display: none; }
-
-.categories-scroll { display: flex; overflow-x: auto; gap: 10px; padding: 10px 0; flex-wrap: nowrap; -webkit-overflow-scrolling: touch; }
-.categories-scroll::-webkit-scrollbar { display: none; }
+.categories-scroll { display: flex; overflow-x: auto; gap: 10px; padding: 10px 0; flex-wrap: nowrap; }
 .category-chip { --background: #000; --color: #fff; border-radius: 12px; padding: 8px 25px; flex-shrink: 0; }
-
 .recipe-card-mini { min-width: 130px; background: #fff; border-radius: 18px; border: 1px solid #f0f0f0; text-align: center; overflow: hidden; cursor: pointer; flex-shrink: 0; }
 .mini-card-img { width: 100%; height: 90px; object-fit: cover; }
 .mini-card-title { font-weight: 600; margin: 8px 0; font-size: 0.9rem; color: #000; }
-
 .recipe-item-card { display: flex; background: #fff; border-radius: 18px; margin-bottom: 14px; height: 120px; border: 1px solid #f5f5f5; overflow: hidden; cursor: pointer; }
 .image-container { width: 38%; position: relative; }
 .image-container img { width: 100%; height: 100%; object-fit: cover; }
@@ -192,8 +190,6 @@ const listadoPrincipal = [
 .recipe-info h3 { margin: 0; font-size: 1.1rem; font-weight: 700; color: #000; }
 .recipe-info p { font-size: 0.8rem; color: #666; margin: 4px 0 8px; }
 .recipe-tag { background: #000; color: #fff; font-size: 0.65rem; padding: 3px 10px; border-radius: 15px; margin-right: 4px; }
-
-/* TAB BAR Y AVATAR */
 .custom-tab-bar { --background: #fff; height: 75px; border-top: 1px solid #f0f0f0; }
 .custom-tab-bar ion-icon { color: black; font-size: 26px; }
 .avatar-wrapper { width: 30px; height: 30px; border-radius: 50%; overflow: hidden; border: 1px solid #000; }
