@@ -1,81 +1,64 @@
 <template>
   <ion-page>
-    <ion-content :fullscreen="true" class="login-page">
-      <div class="login-container">
-
-        <!-- Flecha atrás -->
-        <div class="back-icon">
-          <ion-icon name="arrow-back-outline"></ion-icon>
-        </div>
-
-        <!-- LogoCubiertos MÁS PEQUEÑO -->
-        <img :src="logoCubiertos" alt="Logo cubiertos" class="logo-img" />
-
-        <!-- Título NEGRO -->
-        <h2 class="title">Recuperar Contraseña</h2>
-
-        <!-- Inputs con placeholders en negro -->
-        <div class="inputs">
-          <ion-input
-            class="input"
-            type="password"
-            placeholder="Contraseña"
-            color="dark"
-            v-model="email"
-          ></ion-input>
-
-          <ion-input
-            class="input"
-            type="text"
-            placeholder="Confirmar Contraseña"
-            color="dark"
-            v-model="password"
-          ></ion-input>
-        </div>
+    <ion-content :fullscreen="true" class="recovery-page">
+      <div class="recovery-wrapper">
         
-        <!-- ✅ BOTÓN NEGRO "Registrate" lleva a LoginPage -->
-        <ion-button 
-          expand="block" 
-          class="login-button"
-          @click="goToLoginPage"
-        >
-          Registrate
-        </ion-button>
-
-        <!-- BOTÓN "Olvide mi contraseña" que va a /register -->
-        <ion-button 
-          fill="clear" 
-          class="forgot-button"
-          size="small"
-          @click="goToRegister"
-        >
-          Olvide mi contraseña
-        </ion-button>
-
-        <div class="other-way">
-          <img
-            :src="opcionesInicioSesion"
-            alt="Opciones inicio sesión"
-            class="otras-opciones-img"
-          />
+        <div class="header-row">
+          <ion-button fill="clear" class="back-btn" @click="router.back()">
+            <ion-icon slot="icon-only" :icon="arrowBackOutline" class="dark-icon"></ion-icon>
+          </ion-button>
+          <img :src="logoCubiertos" alt="Logo" class="mini-logo" />
+          <div class="spacer"></div>
         </div>
 
-        <div class="social-icons">
-          <ion-icon name="logo-google"></ion-icon>
-          <ion-icon name="logo-facebook"></ion-icon>
-          <ion-icon name="logo-twitter"></ion-icon>
+        <div class="recovery-card">
+          <div class="title-section">
+            <h2 class="main-title">Nueva Contraseña</h2>
+            <p class="subtitle">Crea una contraseña segura para proteger tu cuenta.</p>
+          </div>
+
+          <div class="form-section">
+            <div class="input-group">
+              <label class="input-label">Contraseña</label>
+              <ion-input
+                class="custom-recovery-input"
+                type="password"
+                placeholder="••••••••"
+                v-model="newPassword"
+              ></ion-input>
+            </div>
+
+            <div class="input-group">
+              <label class="input-label">Confirmar Contraseña</label>
+              <ion-input
+                class="custom-recovery-input"
+                type="password"
+                placeholder="••••••••"
+                v-model="confirmPassword"
+              ></ion-input>
+            </div>
+
+            <ion-button expand="block" class="main-action-btn" @click="handleReset">
+              Actualizar Contraseña
+            </ion-button>
+          </div>
+
+          <div class="divider">
+            <div class="line"></div>
+            <span>o regístrate con</span>
+            <div class="line"></div>
+          </div>
+
+          <div class="social-grid">
+            <div class="social-item"><ion-icon :icon="logoGoogle"></ion-icon></div>
+            <div class="social-item"><ion-icon :icon="logoFacebook"></ion-icon></div>
+            <div class="social-item"><ion-icon :icon="logoTwitter"></ion-icon></div>
+          </div>
+
+          <p class="footer-text">
+            ¿Ya tienes cuenta? <span class="link" @click="goToLogin">Ingresa</span>
+          </p>
         </div>
-
-        <!-- BOTÓN "Ya tienes cuenta? Ingresa" -->
-        <ion-button 
-          fill="clear" 
-          class="login-toggle-button"
-          expand="block"
-          @click="goToLogin"
-        >
-          ¿Ya tienes cuenta? Ingresa
-        </ion-button>
-
       </div>
     </ion-content>
   </ion-page>
@@ -83,158 +66,121 @@
 
 <script setup lang="ts">
 import {
-  IonPage,
-  IonContent,
-  IonButton,
-  IonInput,
-  IonIcon
-} from '@ionic/vue'
-import { ref } from 'vue'
-import { useRouter } from 'vue-router'
+  IonPage, IonContent, IonButton, IonInput, IonIcon
+} from '@ionic/vue';
+import { 
+  arrowBackOutline, logoGoogle, logoFacebook, logoTwitter 
+} from 'ionicons/icons';
+import { ref } from 'vue';
+import { useRouter } from 'vue-router';
+import logoCubiertos from '@/assets/LogoCubiertos.png';
 
-import logoCubiertos from '@/assets/LogoCubiertos.png'
-import opcionesInicioSesion from '@/assets/OpcionesInicioSesion.png'
+const router = useRouter();
+const newPassword = ref('');
+const confirmPassword = ref('');
 
-// Router para navegación
-const router = useRouter()
-
-// Form data
-const email = ref('')
-const password = ref('')
-
-// ✅ BOTÓN NEGRO lleva a LoginPage
-const goToLoginPage = () => {
-  router.push('/LoginPage')
-}
-
-// Función para "Olvide mi contraseña"
-const goToRegister = () => {
-  router.push('/Register')
-}
-
-// Función para "Ya tienes cuenta? Ingresa"
-const goToLogin = () => {
-  router.push('/LoginPage')
-}
+const handleReset = () => {
+  // Aquí iría la validación de que ambas coincidan
+  router.push('/LoginPage');
+};
+const goToLogin = () => router.push('/LoginPage');
 </script>
 
-<!-- Style igual que tenías -->
-<style>
-@import url('https://fonts.googleapis.com/css2?family=Jost:wght@400;600&display=swap');
+<style scoped>
+@import url('https://fonts.googleapis.com/css2?family=Jost:wght@300;400;500;600;700&display=swap');
 
-/* Todo el CSS igual que el anterior */
-.login-page {
-  --background: linear-gradient(180deg, #1d22ff 0%, #6f73ff 50%, #ffffff 100%);
-}
-
-.login-container {
-  padding: 32px 24px 24px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 16px;
+.recovery-page {
+  --background: linear-gradient(180deg, #4f52ff 0%, #8b8eff 30%, #ffffff 80%);
   font-family: 'Jost', sans-serif;
 }
 
-
-.back-icon {
-  align-self: flex-start;
-  margin-bottom: 8px;
-}
-
-.logo-img {
-  width: 90px;
-  height: 90px;
-  object-fit: contain;
-}
-
-.title {
-  margin: 8px 0 16px;
-  font-size: 20px;
-  font-weight: 600;
-  color: #000000 !important;
-  font-family: 'Jost', sans-serif !important;
-}
-
-.inputs {
-  width: 100%;
+.recovery-wrapper {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  min-height: 100%;
+  padding: 20px;
 }
 
-.input {
-  --background: #ffffff;
-  --border-radius: 10px;
-  --padding-start: 16px;
-  --padding-end: 16px;
-  height: 48px;
-  border-radius: 10px;
-  --color: #000000;
-  --placeholder-color: #000000;
-  --placeholder-opacity: 1;
-  --placeholder-font-family: 'Jost', sans-serif;
-}
-
-.login-button {
-  --background: #000000 !important;
-  --color: #ffffff !important;
-  --border-radius: 10px;
-  width: 100%;
-  height: 48px;
-  font-weight: 600;
-  font-family: 'Jost', sans-serif !important;
-}
-
-.login-button::part(native) {
-  font-family: 'Jost', sans-serif !important;
-}
-
-.forgot-button {
-  --color: #000000 !important;
-  --color-activated: #000000;
-  font-size: 13px !important;
-  font-family: 'Jost', sans-serif !important;
-  margin-top: 4px !important;
-  height: 32px !important;
-  --border-radius: 0 !important;
-}
-
-.forgot-button::part(native) {
-  font-family: 'Jost', sans-serif !important;
-  font-size: 13px !important;
-}
-
-.other-way {
-  margin-top: 8px;
-  width: 100%;
+/* HEADER */
+.header-row {
   display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+.back-btn { --color: #000; }
+.mini-logo { width: 50px; height: 50px; object-fit: contain; }
+.spacer { width: 48px; }
+
+/* CARD */
+.recovery-card {
+  background: white;
+  border-radius: 30px;
+  padding: 32px 24px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+  flex-grow: 1;
+}
+
+.title-section { margin-bottom: 30px; }
+.main-title { font-size: 1.8rem; font-weight: 700; color: #000; margin: 0; }
+.subtitle { color: #888; font-size: 0.95rem; margin-top: 5px; }
+
+/* FORM */
+.form-section { display: flex; flex-direction: column; gap: 20px; }
+.input-group { display: flex; flex-direction: column; gap: 8px; }
+.input-label { font-size: 0.8rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: #aaa; margin-left: 4px; }
+
+.custom-recovery-input {
+  --background: #f7f7f9;
+  --border-radius: 16px;
+  --padding-start: 18px;
+  --color: #000;
+  --placeholder-color: #aaa;
+  height: 54px;
+  font-weight: 500;
+}
+
+.main-action-btn {
+  --background: #000;
+  --color: #fff;
+  --border-radius: 18px;
+  height: 56px;
+  font-weight: 700;
+  margin-top: 10px;
+  box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+}
+
+/* DIVIDER */
+.divider {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  margin: 30px 0;
+  color: #ccc;
+  font-size: 0.85rem;
+}
+.line { height: 1px; background: #eee; flex: 1; }
+
+/* SOCIAL */
+.social-grid { display: flex; justify-content: center; gap: 20px; margin-bottom: 30px; }
+.social-item {
+  width: 60px;
+  height: 60px;
+  border: 1px solid #f0f0f0;
+  border-radius: 18px;
+  display: flex;
+  align-items: center;
   justify-content: center;
+  font-size: 24px;
+  color: #000;
 }
 
-.otras-opciones-img {
-  max-width: 100%;
-  height: auto;
-}
+.footer-text { text-align: center; font-size: 0.9rem; color: #888; }
+.link { color: #4f52ff; font-weight: 700; cursor: pointer; }
 
-.social-icons {
-  display: flex;
-  gap: 24px;
-  font-size: 26px;
-  margin-bottom: 16px;
-}
-
-.login-toggle-button {
-  --color: #000000 !important;
-  font-size: 14px !important;
-  font-family: 'Jost', sans-serif !important;
-  --border-radius: 0 !important;
-  margin-top: 8px !important;
-  height: 44px !important;
-}
-
-.login-toggle-button::part(native) {
-  font-family: 'Jost', sans-serif !important;
-  font-size: 14px !important;
+/* LANDSCAPE */
+@media (orientation: landscape) {
+  .recovery-wrapper { flex-direction: row; align-items: center; gap: 20px; }
+  .recovery-card { padding: 20px; }
 }
 </style>

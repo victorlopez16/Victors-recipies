@@ -1,50 +1,88 @@
 <template>
   <ion-page>
-    <ion-header class="ion-no-border custom-header">
-      <ion-toolbar mode="md" class="white-toolbar">
+    <ion-header class="ion-no-border">
+      <ion-toolbar class="white-toolbar">
         <ion-buttons slot="start">
           <ion-button @click="navegarAtras">
             <ion-icon slot="icon-only" :icon="chevronBackOutline" class="black-icon"></ion-icon>
           </ion-button>
         </ion-buttons>
-        <ion-title class="recipe-title">Nombre receta</ion-title>
+        <ion-title class="recipe-title">Detalle</ion-title>
+        <ion-buttons slot="end">
+          <ion-button>
+            <ion-icon slot="icon-only" :icon="shareOutline" class="black-icon"></ion-icon>
+          </ion-button>
+        </ion-buttons>
       </ion-toolbar>
     </ion-header>
 
-    <ion-content :fullscreen="true">
-      <div class="main-image-container">
-        <img src="https://images.unsplash.com/photo-1513104890138-7c749659a591?q=80&w=800" alt="Pizza Pepperoni" />
-        <div class="likes-badge">
-          <ion-icon :icon="heartOutline"></ion-icon>
-          <span>2154</span>
+    <ion-content :fullscreen="true" class="recipe-content">
+      <div class="hero-container">
+        <img src="https://images.unsplash.com/photo-1513104890138-7c749659a591?q=80&w=800" class="main-recipe-img" />
+        <div class="image-overlay"></div>
+        <div class="recipe-header-info">
+          <h1 class="main-name">Pizza Pepperoni Especial</h1>
+          <div class="meta-row">
+            <div class="stat">
+              <ion-icon :icon="heart" class="red-heart"></ion-icon>
+              <span>2,154</span>
+            </div>
+            <div class="stat">
+              <ion-icon :icon="timeOutline"></ion-icon>
+              <span>25 min</span>
+            </div>
+            <div class="stat">
+              <ion-icon :icon="flameOutline"></ion-icon>
+              <span>Media</span>
+            </div>
+          </div>
         </div>
       </div>
 
       <div class="content-wrapper">
         <div class="section-container">
-          <h2 class="section-header">Ingredientes</h2>
-          <ul class="ingredients-list">
-            <li>1. Masa casera</li>
-            <li>2. Tomate</li>
-            <li>3. Queso mozzarela</li>
-            <li>4. Peperoni</li>
-            <li>5. Oregano</li>
-          </ul>
+          <h2 class="section-label">Ingredientes</h2>
+          <div class="ingredients-list">
+            <div class="ingredient-card" v-for="(ing, i) in ['Masa casera', 'Tomate natural', 'Queso Mozzarella', 'Pepperoni premium', 'Orégano seco']" :key="i">
+              <div class="check-box">
+                <ion-icon :icon="checkmarkOutline"></ion-icon>
+              </div>
+              <span class="ingredient-text">{{ ing }}</span>
+            </div>
+          </div>
         </div>
 
         <div class="section-container">
-          <p class="preparation-text">
-            1. Hacemos la masa y la estiramos sobre una bandeja. Untamos una capa de salsa de tomate por toda la superficie. 
-            Cubrimos con bastante queso mozzarella rallado y después colocamos las rodajas de pepperoni bien distribuidas. 
-            Añadimos un poco de orégano y un chorrito de aceite de oliva.
-          </p>
+          <h2 class="section-label">Preparación</h2>
+          <div class="steps-list">
+            <div class="step-card">
+              <div class="step-header">
+                <span class="step-num">01</span>
+                <div class="step-line"></div>
+              </div>
+              <p>Hacemos la masa y la estiramos sobre una bandeja. Untamos una capa de salsa de tomate por toda la superficie.</p>
+            </div>
+            <div class="step-card">
+              <div class="step-header">
+                <span class="step-num">02</span>
+                <div class="step-line"></div>
+              </div>
+              <p>Cubrimos con bastante queso mozzarella rallado y después colocamos las rodajas de pepperoni bien distribuidas.</p>
+            </div>
+            <div class="step-card">
+              <div class="step-header">
+                <span class="step-num">03</span>
+              </div>
+              <p>Añadimos un poco de orégano y un chorrito de aceite de oliva. Horneamos a 200°C hasta que esté dorada.</p>
+            </div>
+          </div>
         </div>
 
         <div class="section-container last-section">
-          <h2 class="section-header">Otras fotos</h2>
-          <div class="extra-photos">
-            <img src="https://images.unsplash.com/photo-1557800636-894a64c1696f?q=80&w=500" class="extra-img" />
-            <img src="https://images.unsplash.com/photo-1520013817300-1f4c1cb245ef?q=80&w=500" class="extra-img" />
+          <h2 class="section-label">Resultado Final</h2>
+          <div class="gallery-grid">
+            <img src="https://images.unsplash.com/photo-1557800636-894a64c1696f?q=80&w=500" class="gallery-img" />
+            <img src="https://images.unsplash.com/photo-1520013817300-1f4c1cb245ef?q=80&w=500" class="gallery-img" />
           </div>
         </div>
       </div>
@@ -59,7 +97,7 @@
           <ion-icon :icon="paperPlaneOutline"></ion-icon>
         </ion-tab-button>
         <ion-tab-button @click="navegar('/')">
-          <div class="home-wrapper">
+          <div class="home-indicator">
             <ion-icon :icon="homeOutline"></ion-icon>
           </div>
         </ion-tab-button>
@@ -83,87 +121,70 @@ import {
   IonButton, IonIcon, IonFooter, IonTabBar, IonTabButton, useIonRouter 
 } from '@ionic/vue';
 import { 
-  chevronBackOutline, heartOutline, personOutline, paperPlaneOutline, 
-  homeOutline, addCircleOutline, alertCircleOutline, searchOutline 
+  chevronBackOutline, heart, personOutline, paperPlaneOutline, 
+  homeOutline, addCircleOutline, alertCircleOutline, searchOutline,
+  shareOutline, timeOutline, flameOutline, checkmarkOutline
 } from 'ionicons/icons';
 
 const ionRouter = useIonRouter();
-
-// Función de retroceso robusta
-const navegarAtras = () => {
-  // canGoBack() comprueba si hay historial. Si no lo hay, lo mandamos al Main manualmente.
-  if (ionRouter.canGoBack()) {
-    ionRouter.back();
-  } else {
-    // El segundo parámetro 'back' fuerza la animación de retroceso aunque sea un push
-    ionRouter.navigate('/MainNoLogged', 'back', 'push');
-  }
-};
-
-const navegar = (ruta: string) => {
-  ionRouter.navigate(ruta, 'forward', 'push');
-};
+const navegarAtras = () => ionRouter.canGoBack() ? ionRouter.back() : ionRouter.navigate('/MainNoLogged', 'back', 'push');
+const navegar = (ruta: string) => ionRouter.navigate(ruta, 'forward', 'push');
 </script>
 
 <style scoped>
-@import url('https://fonts.googleapis.com/css2?family=Jost:wght@400;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Jost:wght@300;400;500;600;700&display=swap');
 
-ion-content { 
-  --background: #ffffff; 
-  font-family: 'Jost', sans-serif; 
-}
-
-/* HEADER */
-.custom-header { background: #ffffff; }
-.white-toolbar { --background: #ffffff; --color: #000; }
-.recipe-title { font-weight: 700; font-size: 1.4rem; color: #000; text-align: center; }
+.recipe-content { --background: #ffffff; font-family: 'Jost', sans-serif; }
+.white-toolbar { --background: #ffffff; }
+.recipe-title { font-weight: 700; font-size: 1rem; color: #bbb; text-transform: uppercase; letter-spacing: 2px; text-align: center; }
 .black-icon { color: #000 !important; }
 
-/* IMAGEN PRINCIPAL */
-.main-image-container { position: relative; width: 100%; height: 320px; }
-.main-image-container img { width: 100%; height: 100%; object-fit: cover; }
-.likes-badge { 
-  position: absolute; 
-  bottom: 15px; 
-  left: 15px; 
-  display: flex; 
-  align-items: center; 
-  gap: 6px; 
-  color: white; 
-  text-shadow: 1px 1px 3px rgba(0,0,0,0.8); 
+/* HERO */
+.hero-container { position: relative; width: 100%; height: 380px; }
+.main-recipe-img { width: 100%; height: 100%; object-fit: cover; }
+.image-overlay { 
+  position: absolute; bottom: 0; left: 0; width: 100%; height: 70%;
+  background: linear-gradient(to top, rgba(0,0,0,0.9) 0%, transparent 100%);
 }
+.recipe-header-info { position: absolute; bottom: 30px; left: 20px; right: 20px; color: white; }
+.main-name { font-size: 2.2rem; font-weight: 700; margin: 0; line-height: 1.1; }
+.meta-row { display: flex; gap: 20px; margin-top: 15px; }
+.stat { display: flex; align-items: center; gap: 6px; font-size: 0.9rem; }
+.red-heart { color: #ff2d55; }
 
-/* CENTRADO DE TEXTO */
-.content-wrapper {
-  max-width: 310px; 
-  margin: 0 auto;
+/* CONTENIDO */
+.content-wrapper { padding: 30px 20px; max-width: 600px; margin: 0 auto; }
+.section-label { font-size: 0.85rem; font-weight: 800; text-transform: uppercase; letter-spacing: 1.5px; color: #000; margin-bottom: 20px; border-left: 3px solid #000; padding-left: 10px; }
+.section-container { margin-bottom: 45px; }
+
+/* INGREDIENTES (LISTA CORREGIDA) */
+.ingredients-list { display: flex; flex-direction: column; gap: 10px; }
+.ingredient-card { 
+  display: flex; align-items: center; gap: 12px; padding: 14px; 
+  background: #f9f9f9; border-radius: 14px; 
 }
-
-.section-container { padding: 20px 0; }
-.section-header { font-size: 1.8rem; font-weight: 700; margin-bottom: 15px; text-align: center; color: #000; }
-
-.ingredients-list { 
-  list-style: none; 
-  padding: 0; 
-  margin: 0 auto; 
-  display: table; 
-  font-size: 1.1rem; 
-  line-height: 1.8; 
+.check-box { 
+  width: 22px; height: 22px; background: #000; border-radius: 6px; 
+  display: flex; align-items: center; justify-content: center; color: #fff; font-size: 14px;
 }
+.ingredient-text { font-size: 1rem; font-weight: 500; color: #333; }
 
-.preparation-text { 
-  font-size: 1rem; 
-  line-height: 1.5; 
-  color: #000; 
-  text-align: left; 
-}
+/* PREPARACIÓN */
+.steps-list { display: flex; flex-direction: column; }
+.step-card { display: flex; gap: 20px; padding-bottom: 30px; }
+.step-header { display: flex; flex-direction: column; align-items: center; }
+.step-num { font-size: 1.1rem; font-weight: 800; color: #000; }
+.step-line { width: 2px; flex: 1; background: #eee; margin-top: 10px; }
+.step-card p { margin: 0; font-size: 1.05rem; line-height: 1.6; color: #444; padding-top: 2px; }
 
-.extra-photos { display: flex; flex-direction: column; gap: 15px; margin-top: 10px; }
-.extra-img { width: 100%; border-radius: 8px; object-fit: cover; }
-.last-section { padding-bottom: 100px; }
+/* GALERÍA */
+.gallery-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.gallery-img { width: 100%; height: 160px; border-radius: 16px; object-fit: cover; }
+.last-section { padding-bottom: 80px; }
 
 /* FOOTER */
-.custom-tab-bar { --background: #ffffff; height: 75px; border-top: 1px solid #f0f0f0; }
-.custom-tab-bar ion-icon { font-size: 26px; color: #000; }
-.home-wrapper { border: 2px solid #000; border-radius: 12px; padding: 4px 10px; display: flex; }
+.custom-tab-bar { --background: #ffffff; height: 85px; border-top: 1px solid #f5f5f5; }
+.home-indicator { background: #000; width: 45px; height: 45px; border-radius: 14px; display: flex; align-items: center; justify-content: center; }
+.home-indicator ion-icon { color: #fff !important; }
+.custom-tab-bar ion-icon { font-size: 24px; color: #000; }
 </style>

@@ -31,10 +31,9 @@
           <h2 class="section-title">Recetas de la semana</h2>
           <div class="horizontal-scroll">
             <div 
-              class="recipe-card-mini" 
+              class="recipe-card-mini no-click" 
               v-for="(recipe, index) in recetasSemanales" 
               :key="'p-' + index"
-              @click="navegar(recipe.title === 'Pizza Margarita' ? '/EntradaReceta' : '/Pleaselogin')"
             >
               <img :src="recipe.image" class="mini-card-img" />
               <p class="mini-card-title">{{ recipe.title }}</p>
@@ -65,7 +64,7 @@
             </div>
           </div>
 
-          <div class="recipe-item-card" @click="navegar('/Pleaselogin')">
+          <div class="recipe-item-card no-click">
             <div class="image-container">
               <img src="https://images.unsplash.com/photo-1551504734-5ee1c4a1479b?q=80&w=500" alt="Tacos" />
               <ion-icon :icon="heartOutline" class="heart-icon"></ion-icon>
@@ -121,8 +120,8 @@ import ArandanosGofres from '@/assets/ArandanosGofres.png';
 const ionRouter = useIonRouter();
 
 const navegar = (ruta: string) => {
-  ionRouter.navigate(ruta, 'forward', 'push');
-}; 
+  ionRouter.navigate(ruta, 'forward', 'push'); // Cambiado de 'replace' a 'push'
+};
 
 const recetasSemanales = [
   { title: 'Pizza Margarita', image: 'https://images.unsplash.com/photo-1513104890138-7c749659a591?q=80&w=500' },
@@ -134,8 +133,11 @@ const recetasSemanales = [
 </script>
 
 <style scoped>
-/* Los estilos se mantienen idénticos para no romper el diseño */
 @import url('https://fonts.googleapis.com/css2?family=Jost:wght@400;600;700&display=swap');
+
+/* Clase para quitar el cursor de mano en elementos sin click */
+.no-click { cursor: default !important; }
+
 .custom-popover { --background: rgba(130, 130, 130, 0.95); --width: 250px; }
 .popover-container { padding: 10px; color: white; }
 .popover-item { display: flex; justify-content: space-between; align-items: center; padding: 12px 5px; border-bottom: 0.5px solid rgba(255, 255, 255, 0.2); }
@@ -156,7 +158,7 @@ const recetasSemanales = [
 .categories-scroll { display: flex; overflow-x: auto; gap: 10px; padding: 10px 0; flex-wrap: nowrap; -webkit-overflow-scrolling: touch; }
 .categories-scroll::-webkit-scrollbar { display: none; }
 .category-chip { --background: #000; --color: #fff; border-radius: 12px; padding: 8px 25px; flex-shrink: 0; }
-.recipe-card-mini { min-width: 130px; background: #fff; border-radius: 18px; border: 1px solid #f0f0f0; text-align: center; overflow: hidden; cursor: pointer; flex-shrink: 0; }
+.recipe-card-mini { min-width: 130px; background: #fff; border-radius: 18px; border: 1px solid #f0f0f0; text-align: center; overflow: hidden; flex-shrink: 0; }
 .mini-card-img { width: 100%; height: 90px; object-fit: cover; }
 .mini-card-title { font-weight: 600; margin: 8px 0; font-size: 0.9rem; color: #000; }
 .recipe-item-card { display: flex; background: #fff; border-radius: 18px; margin-bottom: 14px; height: 120px; border: 1px solid #f5f5f5; overflow: hidden; cursor: pointer; }

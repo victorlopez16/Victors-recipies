@@ -2,16 +2,27 @@
   <ion-page>
     <ion-content :fullscreen="true" class="start-content">
       <div class="start-bg">
-        <div class="brand">
-          <!-- LogoCubiertos SIN círculo negro -->
-          <img :src="logoCubiertos" alt="Logo cubiertos" class="logo-img" />
+        
+        <div class="circle-blur"></div>
+
+        <div class="brand-container">
+          <div class="logo-wrapper">
+            <img :src="logoCubiertos" alt="Logo cubiertos" class="logo-img" />
+          </div>
           
-          <div class="script">Victor's Recipies</div>
+          <div class="text-group">
+            <h1 class="brand-name">Victor's</h1>
+            <h2 class="brand-subtitle">Recipes</h2>
+          </div>
         </div>
 
-        <ion-button class="btn jost-font" expand="block" @click="goNext">
-          Acceder
-        </ion-button>
+        <div class="footer-section">
+          <p class="welcome-text">Descubre el sabor de la cocina casera.</p>
+          <ion-button class="access-btn" expand="block" mode="ios" @click="goNext">
+            Acceder
+          </ion-button>
+        </div>
+
       </div>
     </ion-content>
   </ion-page>
@@ -20,8 +31,6 @@
 <script setup>
 import { IonPage, IonContent, IonButton } from '@ionic/vue'
 import { useRouter } from 'vue-router'
-
-// Importa tu logo PNG
 import logoCubiertos from '@/assets/LogoCubiertos.png'
 
 const router = useRouter()
@@ -31,59 +40,114 @@ function goNext() {
 </script>
 
 <style scoped>
-@import url('https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=Jost:wght@600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=Jost:wght@300;400;600;700&display=swap');
 
-.start-content{ --background: transparent; }
-
-.start-bg{
+/* Fondo con un gradiente más moderno y fluido */
+.start-bg {
   min-height: 100%;
-  background: linear-gradient(180deg, #1d22ff 0%, #6f73ff 35%, #c7c9ff 65%, #ffffff 100%);
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-  justify-content:center; 
-  padding: 72px 22px 40px;
-  position: relative; 
+  background: linear-gradient(180deg, #4f52ff 0%, #8b8eff 40%, #ffffff 90%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between; 
+  padding: 80px 30px 60px;
+  position: relative;
+  overflow: hidden;
 }
 
-.brand{
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-  gap: 14px;
-  margin-top: -40px; 
+/* Decoración: un círculo difuminado para dar textura al fondo */
+.circle-blur {
+  position: absolute;
+  top: -10%;
+  right: -10%;
+  width: 250px;
+  height: 250px;
+  background: rgba(255, 255, 255, 0.2);
+  filter: blur(80px);
+  border-radius: 50%;
 }
 
-.logo-img{
-  width: 90px;
-  height: 90px;
+.brand-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  z-index: 10;
+  margin-top: 20px;
+}
+
+.logo-wrapper {
+  background: rgba(255, 255, 255, 0.9);
+  padding: 20px;
+  border-radius: 30px;
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+  margin-bottom: 25px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.logo-img {
+  width: 80px;
+  height: 80px;
   object-fit: contain;
 }
 
-.script{
-  font-size: 34px;
-  color:#111;
-  font-weight: 700;
-  font-family: 'Dancing Script', cursive;
+.text-group {
+  text-align: center;
 }
 
-.btn.jost-font{
-  --background: #000;
-  --color:#fff;
-  --border-radius: 10px;
-  height: 52px;
+.brand-name {
+  font-family: 'Dancing Script', cursive;
+  font-size: 48px;
+  color: #111;
+  margin: 0;
+  line-height: 1;
+}
+
+.brand-subtitle {
+  font-family: 'Jost', sans-serif;
+  font-size: 14px;
+  text-transform: uppercase;
+  letter-spacing: 6px;
+  color: #111;
+  font-weight: 400;
+  margin-top: 5px;
+  opacity: 0.8;
+}
+
+/* SECCIÓN INFERIOR */
+.footer-section {
   width: 100%;
   max-width: 340px;
-  text-transform: none;
-  font-weight: 600;
-  position: absolute; 
-  bottom: 40px; 
-  left: 50%;
-  transform: translateX(-50%);
-  font-family: 'Jost', sans-serif;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  z-index: 10;
 }
 
-.btn.jost-font::part(native){
+.welcome-text {
   font-family: 'Jost', sans-serif;
+  font-size: 0.95rem;
+  color: #555;
+  text-align: center;
+  margin-bottom: 10px;
+}
+
+.access-btn {
+  --background: #000;
+  --color: #fff;
+  --border-radius: 18px;
+  height: 60px;
+  width: 100%;
+  font-family: 'Jost', sans-serif;
+  font-weight: 700;
+  font-size: 1.1rem;
+  --box-shadow: 0 10px 20px rgba(0,0,0,0.15);
+  margin: 0;
+}
+
+.access-btn::part(native) {
+  letter-spacing: 0.5px;
 }
 </style>

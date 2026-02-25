@@ -1,81 +1,72 @@
 <template>
   <ion-page>
     <ion-content :fullscreen="true" class="login-page">
-      <div class="login-container">
-
-        <!-- Flecha atrás -->
-        <div class="back-icon">
-          <ion-icon name="arrow-back-outline"></ion-icon>
-        </div>
-
-        <!-- LogoCubiertos MÁS PEQUEÑO -->
-        <img :src="logoCubiertos" alt="Logo cubiertos" class="logo-img" />
-
-        <!-- Título NEGRO -->
-        <h2 class="title">Inicia Sesion</h2>
-
-        <!-- Inputs con placeholders en negro -->
-        <div class="inputs">
-          <ion-input
-            class="input"
-            type="email"
-            placeholder="Correo"
-            color="dark"
-            v-model="email"
-          ></ion-input>
-
-          <ion-input
-            class="input"
-            type="password"
-            placeholder="Contraseña"
-            color="dark"
-            v-model="password"
-          ></ion-input>
-        </div>
+      <div class="login-wrapper">
         
-        <!-- ✅ BOTÓN lleva a MainLogged -->
-        <ion-button 
-          expand="block" 
-          class="login-button"
-          @click="handleLogin"
-        >
-          Iniciar Sesion
-        </ion-button>
-
-        <!-- BOTÓN "Olvide mi contraseña" que va a /Register -->
-        <ion-button 
-          fill="clear" 
-          class="forgot-button"
-          size="small"
-          @click="goToRegister"
-        >
-          Olvide mi contraseña
-        </ion-button>
-
-        <div class="other-way">
-          <img
-            :src="opcionesInicioSesion"
-            alt="Opciones inicio sesión"
-            class="otras-opciones-img"
-          />
+        <div class="header-row">
+          <ion-button fill="clear" class="back-btn" @click="router.back()">
+            <ion-icon slot="icon-only" :icon="arrowBackOutline" class="dark-icon"></ion-icon>
+          </ion-button>
+          <img :src="logoCubiertos" alt="Logo" class="mini-logo" />
+          <div class="spacer"></div>
         </div>
 
-        <div class="social-icons">
-          <ion-icon name="logo-google"></ion-icon>
-          <ion-icon name="logo-facebook"></ion-icon>
-          <ion-icon name="logo-twitter"></ion-icon>
+        <div class="login-card">
+          <div class="title-section">
+            <h2 class="main-title">Bienvenido de nuevo</h2>
+            <p class="subtitle">Ingresa tus credenciales para continuar</p>
+          </div>
+
+          <div class="form-section">
+            <div class="input-group">
+              <label class="input-label">Email</label>
+              <ion-input
+                class="custom-login-input"
+                type="email"
+                placeholder="tu@correo.com"
+                v-model="email"
+              ></ion-input>
+            </div>
+
+            <div class="input-group">
+              <label class="input-label">Contraseña</label>
+              <ion-input
+                class="custom-login-input"
+                type="password"
+                placeholder="••••••••"
+                v-model="password"
+              ></ion-input>
+            </div>
+
+            <div class="options-row">
+              <div class="remember-me">
+                <ion-checkbox v-model="rememberMe" mode="ios"></ion-checkbox>
+                <ion-label>Recuérdame</ion-label>
+              </div>
+              <span class="forgot-link" @click="goToRegister">¿Olvidaste tu contraseña?</span>
+            </div>
+
+            <ion-button expand="block" class="main-login-btn" @click="handleLogin">
+              Iniciar Sesión
+            </ion-button>
+          </div>
+
+          <div class="divider">
+            <div class="line"></div>
+            <span>o continúa con</span>
+            <div class="line"></div>
+          </div>
+
+          <div class="social-grid">
+            <div class="social-item"><ion-icon :icon="logoGoogle"></ion-icon></div>
+            <div class="social-item"><ion-icon :icon="logoFacebook"></ion-icon></div>
+            <div class="social-item"><ion-icon :icon="logoTwitter"></ion-icon></div>
+          </div>
+
+          <p class="footer-text">
+            ¿No tienes una cuenta? <span class="link" @click="goToRegister">Regístrate</span>
+          </p>
         </div>
-
-        <p class="register-text">
-          ¿No tienes cuenta? 
-          <span class="register-link">Registrate</span>
-        </p>
-
-        <div class="remember-section">
-          <span class="remember-text">Recuerdame</span>
-          <ion-checkbox v-model="rememberMe"></ion-checkbox>
-        </div>
-
       </div>
     </ion-content>
   </ion-page>
@@ -83,167 +74,132 @@
 
 <script setup lang="ts">
 import {
-  IonPage,
-  IonContent,
-  IonButton,
-  IonInput,
-  IonIcon,
-  IonCheckbox
-} from '@ionic/vue'
-import { ref } from 'vue'
-import { useRouter } from 'vue-router'
+  IonPage, IonContent, IonButton, IonInput, IonIcon, IonCheckbox, IonLabel
+} from '@ionic/vue';
+import { 
+  arrowBackOutline, logoGoogle, logoFacebook, logoTwitter 
+} from 'ionicons/icons';
+import { ref } from 'vue';
+import { useRouter } from 'vue-router';
+import logoCubiertos from '@/assets/LogoCubiertos.png';
 
-import logoCubiertos from '@/assets/LogoCubiertos.png'
-import opcionesInicioSesion from '@/assets/OpcionesInicioSesion.png'
+const router = useRouter();
+const email = ref('');
+const password = ref('');
+const rememberMe = ref(true);
 
-// Router para navegación
-const router = useRouter()
-
-// Form data
-const email = ref('')
-const password = ref('')
-const rememberMe = ref(true)
-
-// ✅ Función de login que navega a MainLogged
-const handleLogin = () => {
-  console.log('Email:', email.value)
-  console.log('Password:', password.value)
-  console.log('Remember me:', rememberMe.value)
-  router.push('/MainLogged')  // ✅ CAMBIADO a MainLogged
-}
-
-// Función para "Olvide mi contraseña"
-const goToRegister = () => {
-  router.push('/Register')
-}
+const handleLogin = () => router.push('/MainLogged');
+const goToRegister = () => router.push('/Register');
 </script>
 
-<style>
-@import url('https://fonts.googleapis.com/css2?family=Jost:wght@400;600&display=swap');
+<style scoped>
+@import url('https://fonts.googleapis.com/css2?family=Jost:wght@300;400;500;600;700&display=swap');
 
 .login-page {
-  --background: linear-gradient(180deg, #1d22ff 0%, #6f73ff 50%, #ffffff 100%);
-}
-
-.login-container {
-  padding: 32px 24px 24px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 16px;
+  --background: linear-gradient(180deg, #4f52ff 0%, #8b8eff 30%, #ffffff 80%);
   font-family: 'Jost', sans-serif;
 }
 
-.back-icon {
-  align-self: flex-start;
-  margin-bottom: 8px;
-}
-
-.logo-img {
-  width: 90px;
-  height: 90px;
-  object-fit: contain;
-}
-
-.title {
-  margin: 8px 0 16px;
-  font-size: 20px;
-  font-weight: 600;
-  color: #000000 !important;
-  font-family: 'Jost', sans-serif !important;
-}
-
-.inputs {
-  width: 100%;
+.login-wrapper {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  min-height: 100%;
+  padding: 20px;
 }
 
-.input {
-  --background: #ffffff;
-  --border-radius: 10px;
-  --padding-start: 16px;
-  --padding-end: 16px;
-  height: 48px;
-  border-radius: 10px;
-  --color: #000000;
-  --placeholder-color: #000000;
-  --placeholder-opacity: 1;
-  --placeholder-font-family: 'Jost', sans-serif;
-}
-
-.login-button {
-  --background: #000000 !important;
-  --color: #ffffff !important;
-  --border-radius: 10px;
-  width: 100%;
-  height: 48px;
-  font-weight: 600;
-  font-family: 'Jost', sans-serif !important;
-}
-
-.login-button::part(native) {
-  font-family: 'Jost', sans-serif !important;
-}
-
-.forgot-button {
-  --color: #000000 !important;
-  --color-activated: #000000;
-  font-size: 13px !important;
-  font-family: 'Jost', sans-serif !important;
-  margin-top: 4px !important;
-  height: 32px !important;
-  --border-radius: 0 !important;
-}
-
-.forgot-button::part(native) {
-  font-family: 'Jost', sans-serif !important;
-  font-size: 13px !important;
-}
-
-.other-way {
-  margin-top: 8px;
-  width: 100%;
+/* HEADER */
+.header-row {
   display: flex;
-  justify-content: center;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+.back-btn { --color: #000; }
+.mini-logo { width: 50px; height: 50px; object-fit: contain; }
+.spacer { width: 48px; }
+
+/* CARD */
+.login-card {
+  background: white;
+  border-radius: 30px;
+  padding: 32px 24px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+  flex-grow: 1;
 }
 
-.otras-opciones-img {
-  max-width: 100%;
-  height: auto;
+.title-section { margin-bottom: 30px; }
+.main-title { font-size: 1.8rem; font-weight: 700; color: #000; margin: 0; }
+.subtitle { color: #888; font-size: 0.95rem; margin-top: 5px; }
+
+/* FORM */
+.form-section { display: flex; flex-direction: column; gap: 20px; }
+.input-group { display: flex; flex-direction: column; gap: 8px; }
+.input-label { font-size: 0.8rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: #aaa; margin-left: 4px; }
+
+.custom-login-input {
+  --background: #f7f7f9;
+  --border-radius: 16px;
+  --padding-start: 18px;
+  --color: #000;
+  --placeholder-color: #aaa;
+  height: 54px;
+  font-weight: 500;
 }
 
-.social-icons {
+.options-row {
   display: flex;
-  gap: 24px;
-  font-size: 26px;
-  margin-bottom: 0px;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.85rem;
 }
 
-.register-text {
-  font-size: 13px;
-  color: #000000 !important;
-  margin: 0;
-  text-align: center;
-  font-family: 'Jost', sans-serif !important;
+.remember-me { display: flex; align-items: center; gap: 8px; color: #555; }
+.forgot-link { font-weight: 600; color: #4f52ff; cursor: pointer; }
+
+.main-login-btn {
+  --background: #000;
+  --color: #fff;
+  --border-radius: 18px;
+  height: 56px;
+  font-weight: 700;
+  margin-top: 10px;
+  box-shadow: 0 10px 20px rgba(0,0,0,0.1);
 }
 
-.register-link {
-  font-weight: 600;
-}
-
-.remember-section {
+/* DIVIDER */
+.divider {
   display: flex;
   align-items: center;
-  gap: 8px;
-  margin-top: 2px; 
+  gap: 15px;
+  margin: 30px 0;
+  color: #ccc;
+  font-size: 0.85rem;
 }
+.line { height: 1px; background: #eee; flex: 1; }
 
-.remember-text {
-  font-size: 13px;
-  color: #000000 !important; 
-  font-family: 'Jost', sans-serif !important;
-  font-weight: 400;
+/* SOCIAL */
+.social-grid { display: flex; justify-content: center; gap: 20px; margin-bottom: 30px; }
+.social-item {
+  width: 60px;
+  height: 60px;
+  border: 1px solid #f0f0f0;
+  border-radius: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  color: #000;
+  transition: all 0.2s;
+}
+.social-item:active { background: #f9f9f9; transform: scale(0.95); }
+
+.footer-text { text-align: center; font-size: 0.9rem; color: #888; }
+.link { color: #4f52ff; font-weight: 700; cursor: pointer; }
+
+/* LANDSCAPE OPTIMIZATION */
+@media (orientation: landscape) {
+  .login-wrapper { flex-direction: row; align-items: center; gap: 20px; }
+  .login-card { padding: 20px; }
+  .title-section { margin-bottom: 15px; }
 }
 </style>
