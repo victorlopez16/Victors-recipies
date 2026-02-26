@@ -49,12 +49,12 @@ import { closeOutline, checkmarkCircle } from 'ionicons/icons';
 const ionRouter = useIonRouter();
 
 const navegarAtras = () => {
-  ionRouter.navigate('/MainLogged', 'back', 'replace');
+  ionRouter.navigate('/RecetaCreada', 'back', 'replace');
 };
 
 const visualizar = () => {
   // Aquí podrías redirigir a la vista de la receta recién creada
-  ionRouter.navigate('/MainLogged', 'forward', 'replace');
+  ionRouter.navigate('/RecetaCreada', 'forward', 'replace');
 };
 </script>
 

@@ -31,7 +31,7 @@
           <p>{{ recetasFiltradas.length }} resultados para "{{ busqueda }}"</p>
         </div>
 
-        <div class="recipe-card" v-for="(receta, i) in recetasFiltradas" :key="i" @click="navegar('/DetalleReceta')">
+        <div class="recipe-card" v-for="(receta, i) in recetasFiltradas" :key="i" @click="navegar('/RecetaLogged')">
           <div class="image-section">
             <img :src="receta.image" :alt="receta.title" />
             <div class="category-badge">{{ receta.tags[0] }}</div>
