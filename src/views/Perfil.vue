@@ -20,8 +20,31 @@
         
         <header class="header-v2">
           <div class="avatar-box">
-            <img src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?q=80&w=300" class="main-avatar" />
+            <img :src="avatarActual" class="main-avatar" />
             <div class="status-indicator"></div>
+            <!-- Botón para abrir selector -->
+            <div class="avatar-edit-btn" @click="mostrarSelector = !mostrarSelector">
+              <ion-icon :icon="cameraOutline"></ion-icon>
+            </div>
+          </div>
+
+          <!-- SELECTOR DE AVATARES -->
+          <div class="avatar-selector" v-if="mostrarSelector">
+            <p class="selector-label">Elige tu foto de perfil</p>
+            <div class="avatar-options">
+              <div
+                v-for="(foto, i) in fotosDisponibles"
+                :key="i"
+                class="avatar-option"
+                :class="{ selected: avatarActual === foto }"
+                @click="seleccionarAvatar(foto)"
+              >
+                <img :src="foto" />
+                <div v-if="avatarActual === foto" class="check-overlay">
+                  <ion-icon :icon="checkmarkCircle"></ion-icon>
+                </div>
+              </div>
+            </div>
           </div>
           
           <div class="user-meta">
@@ -92,19 +115,12 @@
 
           <!-- RECETAS REALES -->
           <div v-else class="recipe-stack">
-            <div
-              v-if="listaActiva.length === 0"
-              class="empty-state"
-            >
+            <div v-if="listaActiva.length === 0" class="empty-state">
               <ion-icon :icon="pillActiva === 'guardadas' ? bookmarkOutline : restaurantOutline" class="empty-icon"></ion-icon>
               <p>{{ pillActiva === 'guardadas' ? 'No tienes recetas guardadas' : 'No tienes recetas creadas' }}</p>
             </div>
 
-            <div
-              class="modern-recipe-card"
-              v-for="(receta, i) in listaActiva"
-              :key="i"
-            >
+            <div class="modern-recipe-card" v-for="(receta, i) in listaActiva" :key="i">
               <div class="card-media">
                 <img :src="receta.image" />
                 <div class="glass-tag">{{ receta.tags[0] }}</div>
@@ -128,37 +144,31 @@
     <ion-footer class="ion-no-border">
       <ion-tab-bar slot="bottom" class="floating-tabs">
 
-        <!-- Perfil (activo) -->
         <ion-tab-button class="tab-active-wrapper">
           <div class="avatar-tab active-avatar">
-            <img src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?q=80&w=150" />
+            <img :src="avatarActual" />
           </div>
           <div class="tab-dot"></div>
         </ion-tab-button>
 
-        <!-- Chat -->
         <ion-tab-button @click="navegar('/Chat')">
           <ion-icon :icon="paperPlaneOutline"></ion-icon>
         </ion-tab-button>
 
-        <!-- Home -->
         <ion-tab-button @click="navegar('/MainLogged')">
           <div class="home-btn-center">
             <ion-icon :icon="homeOutline"></ion-icon>
           </div>
         </ion-tab-button>
 
-        <!-- Crear receta -->
         <ion-tab-button @click="navegar('/CreadorRecetas')">
           <ion-icon :icon="addCircleOutline"></ion-icon>
         </ion-tab-button>
 
-        <!-- Alertas -->
         <ion-tab-button @click="navegar('/Alert')">
           <ion-icon :icon="alertCircleOutline"></ion-icon>
         </ion-tab-button>
 
-        <!-- Buscar -->
         <ion-tab-button @click="navegar('/SearchLogged')">
           <ion-icon :icon="searchOutline"></ion-icon>
         </ion-tab-button>
@@ -172,26 +182,39 @@
 import {
   IonPage, IonHeader, IonToolbar, IonButtons, IonButton,
   IonIcon, IonContent, IonFooter, IonTabBar, IonTabButton, useIonRouter
-} from '@ionic/vue'; // ✅ Corregido @ionic/vue
+} from '@ionic/vue';
 import {
   chevronBackOutline, heartOutline, paperPlaneOutline,
   homeOutline, addCircleOutline, alertCircleOutline, searchOutline,
-  logOutOutline, ellipsisHorizontal, bookmarkOutline, restaurantOutline
+  logOutOutline, ellipsisHorizontal, bookmarkOutline, restaurantOutline,
+  cameraOutline, checkmarkCircle
 } from 'ionicons/icons';
 import { ref, computed } from 'vue';
 import ArandanosGofres from '@/assets/ArandanosGofres.png';
 
-// ✅ Lógica de navegación adaptada
 const ionRouter = useIonRouter();
 const navegarAtras = () => ionRouter.canGoBack() ? ionRouter.back() : ionRouter.navigate('/MainLogged', 'back', 'replace');
 const navegar = (ruta: string) => ionRouter.navigate(ruta, 'forward', 'push');
 
 const pillActiva = ref<'recetas' | 'guardadas'>('recetas');
-
-// ✅ Cargando en false para mostrar recetas al instante
 const cargando = ref(false);
+const mostrarSelector = ref(false);
 
-// ✅ Cambio de pestaña instantáneo
+const fotosDisponibles = [
+  'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?q=80&w=300',
+  'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?q=80&w=300',
+  'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?q=80&w=300',
+  'https://images.unsplash.com/photo-1599566150163-29194dcaad36?q=80&w=300',
+  'https://images.unsplash.com/photo-1580489944761-15a19d654956?q=80&w=300',
+];
+
+const avatarActual = ref(fotosDisponibles[0]);
+
+const seleccionarAvatar = (foto: string) => {
+  avatarActual.value = foto;
+  setTimeout(() => { mostrarSelector.value = false; }, 400);
+};
+
 const cambiarPill = (pill: 'recetas' | 'guardadas') => {
   pillActiva.value = pill;
 };
@@ -225,9 +248,100 @@ const listaActiva = computed(() => pillActiva.value === 'recetas' ? recetas : gu
 
 /* HEADER */
 .header-v2 { display: flex; flex-direction: column; align-items: center; text-align: center; }
+
 .avatar-box { position: relative; margin-bottom: 15px; }
-.main-avatar { width: 110px; height: 110px; border-radius: 40px; object-fit: cover; border: 4px solid #fff; box-shadow: 0 10px 25px rgba(0,0,0,0.1); }
+.main-avatar { width: 110px; height: 110px; border-radius: 40px; object-fit: cover; border: 4px solid #fff; box-shadow: 0 10px 25px rgba(0,0,0,0.1); transition: opacity 0.2s ease; }
 .status-indicator { position: absolute; bottom: 5px; right: -2px; width: 18px; height: 18px; background: #2dd36f; border: 3px solid #fff; border-radius: 50%; }
+
+/* BOTÓN EDITAR AVATAR */
+.avatar-edit-btn {
+  position: absolute;
+  bottom: -6px;
+  left: -6px;
+  width: 32px;
+  height: 32px;
+  background: #4f52ff;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-size: 16px;
+  border: 2px solid #fff;
+  cursor: pointer;
+  box-shadow: 0 3px 8px rgba(79,82,255,0.4);
+  transition: transform 0.2s ease;
+}
+.avatar-edit-btn:active { transform: scale(0.9); }
+
+/* SELECTOR DE AVATARES */
+.avatar-selector {
+  width: 100%;
+  background: #fff;
+  border-radius: 24px;
+  padding: 16px;
+  margin-bottom: 20px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.06);
+  animation: fadeInDown 0.25s ease;
+}
+
+@keyframes fadeInDown {
+  from { opacity: 0; transform: translateY(-10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.selector-label {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #aaa;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin: 0 0 12px;
+  text-align: left;
+}
+
+.avatar-options {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.avatar-option {
+  position: relative;
+  width: 52px;
+  height: 52px;
+  border-radius: 16px;
+  overflow: hidden;
+  cursor: pointer;
+  border: 3px solid transparent;
+  transition: border-color 0.2s ease, transform 0.2s ease;
+  flex-shrink: 0;
+}
+
+.avatar-option img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.avatar-option.selected {
+  border-color: #4f52ff;
+  box-shadow: 0 0 0 2px rgba(79,82,255,0.3);
+}
+
+.avatar-option:active { transform: scale(0.93); }
+
+.check-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(79,82,255,0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-size: 22px;
+}
+
 .user-meta { display: flex; align-items: center; gap: 8px; margin-bottom: 5px; }
 .full-name { font-size: 1.6rem; font-weight: 800; color: #1a1a1a; margin: 0; }
 .user-badge { background: #000; color: #fff; font-size: 0.65rem; padding: 2px 8px; border-radius: 20px; font-weight: 700; }
@@ -252,14 +366,7 @@ const listaActiva = computed(() => pillActiva.value === 'recetas' ? recetas : gu
 .pill-mini.active { background: #000; color: #fff; }
 
 /* EMPTY STATE */
-.empty-state {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 10px;
-  padding: 40px 20px;
-  color: #ccc;
-}
+.empty-state { display: flex; flex-direction: column; align-items: center; gap: 10px; padding: 40px 20px; color: #ccc; }
 .empty-icon { font-size: 48px; }
 .empty-state p { font-size: 0.9rem; font-weight: 600; margin: 0; }
 
@@ -281,21 +388,10 @@ const listaActiva = computed(() => pillActiva.value === 'recetas' ? recetas : gu
   0% { background-position: -400px 0; }
   100% { background-position: 400px 0; }
 }
-
 .skeleton-card { cursor: default; }
-.skeleton-media {
-  width: 100px; height: 100px; border-radius: 18px; flex-shrink: 0;
-  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
-  background-size: 800px 100%;
-  animation: shimmer 1.4s infinite linear;
-}
+.skeleton-media { width: 100px; height: 100px; border-radius: 18px; flex-shrink: 0; background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%); background-size: 800px 100%; animation: shimmer 1.4s infinite linear; }
 .skeleton-content { flex: 1; display: flex; flex-direction: column; justify-content: center; gap: 10px; }
-.skeleton-line {
-  height: 12px; border-radius: 6px;
-  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
-  background-size: 800px 100%;
-  animation: shimmer 1.4s infinite linear;
-}
+.skeleton-line { height: 12px; border-radius: 6px; background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%); background-size: 800px 100%; animation: shimmer 1.4s infinite linear; }
 .skeleton-line.wide { width: 80%; }
 .skeleton-line.medium { width: 55%; }
 .skeleton-line.short { width: 30%; }
@@ -303,13 +399,11 @@ const listaActiva = computed(() => pillActiva.value === 'recetas' ? recetas : gu
 /* TAB BAR */
 .floating-tabs { --background: #fff; height: 90px; border-top: 1px solid #f2f2f2; padding: 0 10px; }
 .floating-tabs ion-icon { color: #000; font-size: 26px; }
-
 .tab-active-wrapper { display: flex; flex-direction: column; align-items: center; gap: 3px; }
 .avatar-tab { width: 32px; height: 32px; border-radius: 10px; overflow: hidden; border: 2px solid #000; transition: border-color 0.2s; }
 .avatar-tab.active-avatar { border-color: #4f52ff; box-shadow: 0 0 0 2px rgba(79, 82, 255, 0.3); }
 .avatar-tab img { width: 100%; height: 100%; object-fit: cover; }
 .tab-dot { width: 5px; height: 5px; border-radius: 50%; background: #4f52ff; }
-
 .home-btn-center { background: #000; color: #fff; padding: 10px 16px; border-radius: 18px; box-shadow: 0 5px 15px rgba(0,0,0,0.2); }
 .home-btn-center ion-icon { color: #fff; }
 </style>

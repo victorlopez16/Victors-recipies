@@ -42,6 +42,29 @@
                 <div class="popover-menu">
                   <button class="popover-item" @click="tomarFoto">📷 Tomar foto</button>
                   <button class="popover-item" @click="elegirDeGaleria">🖼️ Elegir foto de la galería</button>
+                  <button class="popover-item avatar-preset-btn" @click="mostrarPresets = !mostrarPresets">
+                    🧑 Elegir avatar predefinido
+                    <ion-icon :icon="mostrarPresets ? chevronUpOutline : chevronDownOutline" class="preset-arrow"></ion-icon>
+                  </button>
+
+                  <!-- SELECTOR CON SCROLL -->
+                  <div class="preset-grid" :class="{ expanded: mostrarPresets }">
+                    <div class="preset-grid-inner">
+                      <div
+                        v-for="(foto, i) in fotosDisponibles"
+                        :key="i"
+                        class="preset-option"
+                        :class="{ selected: photoUrl === foto }"
+                        @click="seleccionarPreset(foto)"
+                      >
+                        <img :src="foto" />
+                        <div v-if="photoUrl === foto" class="preset-check">
+                          <ion-icon :icon="checkmarkCircleOutline"></ion-icon>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
                   <button v-if="photoUrl !== defaultPhoto" class="popover-item restore" @click="restaurarFoto">🔄 Restaurar foto original</button>
                   <button v-if="photoUrl" class="popover-item danger" @click="eliminarFoto">🗑️ Eliminar foto</button>
                 </div>
@@ -55,7 +78,6 @@
 
           <div class="inputs-group">
 
-            <!-- Nombre completo -->
             <div class="input-field">
               <div class="label-row">
                 <label class="field-label">Nombre completo</label>
@@ -64,19 +86,12 @@
                 </span>
               </div>
               <div class="input-container" :class="validacionNombre.clase">
-                <ion-input
-                  v-model="nombre"
-                  placeholder="Tu nombre"
-                  class="custom-input"
-                  :maxlength="50"
-                  @ion-blur="nombreTocado = true"
-                ></ion-input>
+                <ion-input v-model="nombre" placeholder="Tu nombre" class="custom-input" :maxlength="50" @ion-blur="nombreTocado = true"></ion-input>
                 <ion-icon v-if="nombreTocado" :icon="validacionNombre.icono" class="validation-icon" :class="validacionNombre.clase"></ion-icon>
               </div>
               <p v-if="nombreTocado && nombre.trim().length === 0" class="field-error">El nombre no puede estar vacío</p>
             </div>
 
-            <!-- Nombre de usuario -->
             <div class="input-field">
               <div class="label-row">
                 <label class="field-label">Nombre de usuario</label>
@@ -85,13 +100,7 @@
                 </span>
               </div>
               <div class="input-container" :class="validacionUsername.clase">
-                <ion-input
-                  v-model="username"
-                  placeholder="@usuario"
-                  class="custom-input"
-                  :maxlength="25"
-                  @ion-blur="usernameTocado = true"
-                ></ion-input>
+                <ion-input v-model="username" placeholder="@usuario" class="custom-input" :maxlength="25" @ion-blur="usernameTocado = true"></ion-input>
                 <ion-icon v-if="usernameTocado" :icon="validacionUsername.icono" class="validation-icon" :class="validacionUsername.clase"></ion-icon>
               </div>
               <p v-if="usernameTocado && !usernameValido" class="field-error">
@@ -110,108 +119,47 @@
                 </div>
                 <span>Cambiar contraseña</span>
               </div>
-              <ion-icon
-                :icon="mostrarCambioPassword ? chevronUpOutline : chevronDownOutline"
-                class="toggle-arrow"
-                :class="{ rotated: mostrarCambioPassword }"
-              ></ion-icon>
+              <ion-icon :icon="mostrarCambioPassword ? chevronUpOutline : chevronDownOutline" class="toggle-arrow"></ion-icon>
             </button>
 
             <div class="password-fields" :class="{ expanded: mostrarCambioPassword }">
               <div class="password-fields-inner">
 
-                <!-- Contraseña actual -->
                 <div class="input-field">
                   <label class="field-label">Contraseña actual</label>
                   <div class="input-container" :class="estadoPasswordActual">
-                    <ion-input
-                      :type="mostrarPasswordActual ? 'text' : 'password'"
-                      v-model="passwordActual"
-                      placeholder="••••••••"
-                      class="custom-input"
-                      @ion-blur="passwordActualTocado = true"
-                    ></ion-input>
-                    <ion-icon
-                      :icon="mostrarPasswordActual ? eyeOffOutline : eyeOutline"
-                      class="eye-icon"
-                      @click="mostrarPasswordActual = !mostrarPasswordActual"
-                    ></ion-icon>
-                    <ion-icon
-                      v-if="passwordActualTocado"
-                      :icon="passwordActualValido ? checkmarkCircleOutline : closeCircleOutline"
-                      class="validation-icon"
-                      :class="estadoPasswordActual"
-                    ></ion-icon>
+                    <ion-input :type="mostrarPasswordActual ? 'text' : 'password'" v-model="passwordActual" placeholder="••••••••" class="custom-input" @ion-blur="passwordActualTocado = true"></ion-input>
+                    <ion-icon :icon="mostrarPasswordActual ? eyeOffOutline : eyeOutline" class="eye-icon" @click="mostrarPasswordActual = !mostrarPasswordActual"></ion-icon>
+                    <ion-icon v-if="passwordActualTocado" :icon="passwordActualValido ? checkmarkCircleOutline : closeCircleOutline" class="validation-icon" :class="estadoPasswordActual"></ion-icon>
                   </div>
                   <p v-if="passwordActualTocado && !passwordActualValido" class="field-error">Introduce tu contraseña actual</p>
                 </div>
 
-                <!-- Nueva contraseña -->
                 <div class="input-field">
                   <label class="field-label">Nueva contraseña</label>
                   <div class="input-container" :class="estadoPasswordNueva">
-                    <ion-input
-                      :type="mostrarPasswordNueva ? 'text' : 'password'"
-                      v-model="passwordNueva"
-                      placeholder="••••••••"
-                      class="custom-input"
-                      @ion-blur="passwordNuevaTocado = true"
-                    ></ion-input>
-                    <ion-icon
-                      :icon="mostrarPasswordNueva ? eyeOffOutline : eyeOutline"
-                      class="eye-icon"
-                      @click="mostrarPasswordNueva = !mostrarPasswordNueva"
-                    ></ion-icon>
-                    <ion-icon
-                      v-if="passwordNuevaTocado"
-                      :icon="passwordNuevaValido ? checkmarkCircleOutline : closeCircleOutline"
-                      class="validation-icon"
-                      :class="estadoPasswordNueva"
-                    ></ion-icon>
+                    <ion-input :type="mostrarPasswordNueva ? 'text' : 'password'" v-model="passwordNueva" placeholder="••••••••" class="custom-input" @ion-blur="passwordNuevaTocado = true"></ion-input>
+                    <ion-icon :icon="mostrarPasswordNueva ? eyeOffOutline : eyeOutline" class="eye-icon" @click="mostrarPasswordNueva = !mostrarPasswordNueva"></ion-icon>
+                    <ion-icon v-if="passwordNuevaTocado" :icon="passwordNuevaValido ? checkmarkCircleOutline : closeCircleOutline" class="validation-icon" :class="estadoPasswordNueva"></ion-icon>
                   </div>
                   <p v-if="passwordNuevaTocado && !passwordNuevaValido" class="field-error">Mínimo 6 caracteres</p>
                 </div>
 
-                <!-- Confirmar nueva contraseña -->
                 <div class="input-field">
                   <label class="field-label">Confirmar nueva contraseña</label>
                   <div class="input-container" :class="estadoPasswordConfirm">
-                    <ion-input
-                      :type="mostrarPasswordConfirm ? 'text' : 'password'"
-                      v-model="passwordConfirm"
-                      placeholder="••••••••"
-                      class="custom-input"
-                      @ion-blur="passwordConfirmTocado = true"
-                    ></ion-input>
-                    <ion-icon
-                      :icon="mostrarPasswordConfirm ? eyeOffOutline : eyeOutline"
-                      class="eye-icon"
-                      @click="mostrarPasswordConfirm = !mostrarPasswordConfirm"
-                    ></ion-icon>
-                    <ion-icon
-                      v-if="passwordConfirmTocado"
-                      :icon="passwordConfirmValido ? checkmarkCircleOutline : closeCircleOutline"
-                      class="validation-icon"
-                      :class="estadoPasswordConfirm"
-                    ></ion-icon>
+                    <ion-input :type="mostrarPasswordConfirm ? 'text' : 'password'" v-model="passwordConfirm" placeholder="••••••••" class="custom-input" @ion-blur="passwordConfirmTocado = true"></ion-input>
+                    <ion-icon :icon="mostrarPasswordConfirm ? eyeOffOutline : eyeOutline" class="eye-icon" @click="mostrarPasswordConfirm = !mostrarPasswordConfirm"></ion-icon>
+                    <ion-icon v-if="passwordConfirmTocado" :icon="passwordConfirmValido ? checkmarkCircleOutline : closeCircleOutline" class="validation-icon" :class="estadoPasswordConfirm"></ion-icon>
                   </div>
                   <p v-if="passwordConfirmTocado && !passwordConfirmValido" class="field-error">
                     {{ passwordConfirm.length === 0 ? 'Confirma tu nueva contraseña' : 'Las contraseñas no coinciden' }}
                   </p>
                 </div>
 
-                <!-- Botón guardar contraseña -->
-                <ion-button
-                  expand="block"
-                  class="password-save-btn"
-                  :class="{ 'btn-success': passwordGuardado }"
-                  :disabled="guardandoPassword"
-                  @click="guardarPassword"
-                >
+                <ion-button expand="block" class="password-save-btn" :class="{ 'btn-success': passwordGuardado }" :disabled="guardandoPassword" @click="guardarPassword">
                   <span v-if="!guardandoPassword && !passwordGuardado">Actualizar contraseña</span>
-                  <span v-else-if="guardandoPassword" class="saving-dots">
-                    Actualizando<span class="dot1">.</span><span class="dot2">.</span><span class="dot3">.</span>
-                  </span>
+                  <span v-else-if="guardandoPassword" class="saving-dots">Actualizando<span class="dot1">.</span><span class="dot2">.</span><span class="dot3">.</span></span>
                   <span v-else>✓ ¡Contraseña actualizada!</span>
                 </ion-button>
 
@@ -220,13 +168,7 @@
           </div>
 
           <div class="footer-actions">
-            <ion-button
-              expand="block"
-              class="confirm-btn"
-              :class="{ 'btn-success': guardadoExitoso }"
-              :disabled="guardando || !formularioValido"
-              @click="confirmar"
-            >
+            <ion-button expand="block" class="confirm-btn" :class="{ 'btn-success': guardadoExitoso }" :disabled="guardando || !formularioValido" @click="confirmar">
               <span v-if="!guardando && !guardadoExitoso">Guardar Cambios</span>
               <span v-else-if="guardando" class="saving-dots">Guardando<span class="dot1">.</span><span class="dot2">.</span><span class="dot3">.</span></span>
               <span v-else class="success-check">✓ ¡Guardado!</span>
@@ -255,7 +197,6 @@ import { ref, computed } from 'vue';
 
 const ionRouter = useIonRouter();
 
-// Perfil
 const nombre = ref('Daniel Martinez');
 const username = ref('@danimarti');
 const nombreTocado = ref(false);
@@ -264,13 +205,30 @@ const isHoveringAvatar = ref(false);
 const guardando = ref(false);
 const guardadoExitoso = ref(false);
 
-// Foto
-const defaultPhoto = 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?q=80&w=300';
+const fotosDisponibles = [
+  'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?q=80&w=300',
+  'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?q=80&w=300',
+  'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?q=80&w=300',
+  'https://images.unsplash.com/photo-1599566150163-29194dcaad36?q=80&w=300',
+  'https://images.unsplash.com/photo-1580489944761-15a19d654956?q=80&w=300',
+  'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=300',
+  'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?q=80&w=300',
+  'https://images.unsplash.com/photo-1544005313-94ddf0286df2?q=80&w=300',
+  'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?q=80&w=300',
+  'https://images.unsplash.com/photo-1552058544-f2b08422138a?q=80&w=300',
+];
+
+const mostrarPresets = ref(false);
+const seleccionarPreset = (foto: string) => {
+  photoUrl.value = foto;
+  mostrarPresets.value = false;
+};
+
+const defaultPhoto = fotosDisponibles[0];
 const photoUrl = ref<string>(defaultPhoto);
 const fileInputRef = ref<HTMLInputElement | null>(null);
 const cameraInputRef = ref<HTMLInputElement | null>(null);
 
-// Contraseña
 const mostrarCambioPassword = ref(false);
 const passwordActual = ref('');
 const passwordNueva = ref('');
@@ -284,7 +242,6 @@ const mostrarPasswordConfirm = ref(false);
 const guardandoPassword = ref(false);
 const passwordGuardado = ref(false);
 
-// Validaciones perfil
 const nombreValido = computed(() => nombre.value.trim().length > 0 && nombre.value.length <= 50);
 const usernameValido = computed(() => {
   const val = username.value.trim();
@@ -301,23 +258,12 @@ const validacionUsername = computed(() => ({
   icono: usernameValido.value ? checkmarkCircleOutline : closeCircleOutline,
 }));
 
-// Validaciones contraseña
 const passwordActualValido = computed(() => passwordActual.value.length >= 6);
 const passwordNuevaValido = computed(() => passwordNueva.value.length >= 6);
 const passwordConfirmValido = computed(() => passwordConfirm.value.length > 0 && passwordConfirm.value === passwordNueva.value);
-
-const estadoPasswordActual = computed(() => {
-  if (!passwordActualTocado.value) return '';
-  return passwordActualValido.value ? 'valid' : 'invalid';
-});
-const estadoPasswordNueva = computed(() => {
-  if (!passwordNuevaTocado.value) return '';
-  return passwordNuevaValido.value ? 'valid' : 'invalid';
-});
-const estadoPasswordConfirm = computed(() => {
-  if (!passwordConfirmTocado.value) return '';
-  return passwordConfirmValido.value ? 'valid' : 'invalid';
-});
+const estadoPasswordActual = computed(() => !passwordActualTocado.value ? '' : passwordActualValido.value ? 'valid' : 'invalid');
+const estadoPasswordNueva = computed(() => !passwordNuevaTocado.value ? '' : passwordNuevaValido.value ? 'valid' : 'invalid');
+const estadoPasswordConfirm = computed(() => !passwordConfirmTocado.value ? '' : passwordConfirmValido.value ? 'valid' : 'invalid');
 
 const navegarAtras = () => {
   ionRouter.canGoBack() ? ionRouter.back() : ionRouter.navigate('/Perfil', 'back', 'replace');
@@ -327,12 +273,10 @@ const confirmar = async () => {
   nombreTocado.value = true;
   usernameTocado.value = true;
   if (!formularioValido.value) return;
-
   guardando.value = true;
   await new Promise(resolve => setTimeout(resolve, 1400));
   guardando.value = false;
   guardadoExitoso.value = true;
-
   await new Promise(resolve => setTimeout(resolve, 1200));
   ionRouter.navigate('/Perfil', 'back', 'replace');
 };
@@ -342,13 +286,10 @@ const guardarPassword = async () => {
   passwordNuevaTocado.value = true;
   passwordConfirmTocado.value = true;
   if (!passwordActualValido.value || !passwordNuevaValido.value || !passwordConfirmValido.value) return;
-
   guardandoPassword.value = true;
   await new Promise(resolve => setTimeout(resolve, 1400));
   guardandoPassword.value = false;
   passwordGuardado.value = true;
-
-  // Limpiar campos tras éxito
   await new Promise(resolve => setTimeout(resolve, 1500));
   passwordActual.value = '';
   passwordNueva.value = '';
@@ -411,159 +352,119 @@ const restaurarFoto = () => { photoUrl.value = defaultPhoto; };
 .char-counter { font-size: 0.75rem; font-weight: 600; color: #ccc; transition: color 0.2s; }
 .char-counter.counter-ok { color: #34c759; }
 .char-counter.counter-warning { color: #ff9500; }
-
-.input-container {
-  background: #f7f7f9;
-  border-radius: 16px;
-  padding: 4px 16px;
-  border: 1.5px solid transparent;
-  transition: all 0.25s ease;
-  display: flex;
-  align-items: center;
-}
+.input-container { background: #f7f7f9; border-radius: 16px; padding: 4px 16px; border: 1.5px solid transparent; transition: all 0.25s ease; display: flex; align-items: center; }
 .input-container:focus-within { background: #fff; border-color: #4f52ff; box-shadow: 0 0 0 4px rgba(79,82,255,0.1); }
 .input-container.valid { border-color: #34c759; background: #f0fdf4; }
 .input-container.invalid { border-color: #ff3b30; background: #fff5f5; }
-
 .custom-input { flex: 1; --color: #000; --placeholder-color: #999; font-weight: 500; font-size: 1rem; }
-
 .eye-icon { font-size: 20px; color: #aaa; cursor: pointer; padding: 4px; margin-right: 2px; transition: color 0.2s; flex-shrink: 0; }
 .eye-icon:active { color: #4f52ff; }
-
 .validation-icon { font-size: 20px; flex-shrink: 0; margin-left: 4px; }
 .validation-icon.valid { color: #34c759; }
 .validation-icon.invalid { color: #ff3b30; }
-
 .field-error { font-size: 0.78rem; color: #ff3b30; font-weight: 500; padding-left: 4px; margin: 0; animation: fadeIn 0.2s ease; }
 @keyframes fadeIn { from { opacity: 0; transform: translateY(-4px); } to { opacity: 1; transform: translateY(0); } }
 
-/* SECCIÓN CAMBIAR CONTRASEÑA */
-.password-section {
-  border: 1.5px solid #f0f0f0;
-  border-radius: 20px;
-  overflow: hidden;
-  transition: border-color 0.25s ease;
-}
-
-.password-section:has(.expanded) {
-  border-color: #e0e0ff;
-}
-
-.password-toggle {
-  width: 100%;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 16px 18px;
-  background: #fafafa;
-  border: none;
-  cursor: pointer;
-  font-family: 'Jost', sans-serif;
-  transition: background 0.2s ease;
-}
-
-.password-toggle:active { background: #f0f0f5; }
-
-.password-toggle-left {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
-.password-icon-wrapper {
-  width: 36px;
-  height: 36px;
-  background: #000;
-  border-radius: 10px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: #fff;
-  font-size: 18px;
-  flex-shrink: 0;
-}
-
-.password-toggle-left span {
-  font-size: 0.95rem;
-  font-weight: 700;
-  color: #000;
-}
-
-.toggle-arrow {
-  font-size: 18px;
-  color: #aaa;
-  transition: transform 0.3s ease;
-}
-
-/* Animación desplegable */
-.password-fields {
-  max-height: 0;
-  overflow: hidden;
-  transition: max-height 0.4s ease;
-}
-
-.password-fields.expanded {
-  max-height: 600px;
-}
-
-.password-fields-inner {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-  padding: 20px 18px;
-  border-top: 1px solid #f0f0f0;
-}
-
-.password-save-btn {
-  --background: #4f52ff;
-  --color: #fff;
-  --border-radius: 14px;
-  height: 50px;
-  font-weight: 700;
-  font-size: 0.95rem;
-  margin-top: 4px;
-  box-shadow: 0 6px 16px rgba(79, 82, 255, 0.25);
-}
-
-.password-save-btn.btn-success {
-  --background: #34c759;
-  box-shadow: 0 6px 16px rgba(52, 199, 89, 0.25);
-}
-
-.password-save-btn[disabled] {
-  --background: #aaa;
-  opacity: 1;
-}
-
-/* FOOTER */
-.footer-actions { display: flex; flex-direction: column; align-items: center; gap: 16px; margin-top: 10px; }
-
-.confirm-btn {
-  --background: #000;
-  --color: #fff;
-  --border-radius: 18px;
-  width: 100%;
-  height: 58px;
-  font-size: 1rem;
-  font-weight: 700;
-  box-shadow: 0 10px 20px rgba(0,0,0,0.1);
-}
-.confirm-btn.btn-success { --background: #34c759; box-shadow: 0 10px 20px rgba(52,199,89,0.25); }
-.confirm-btn[disabled] { --background: #ccc; box-shadow: none; }
-
-.saving-dots .dot1, .saving-dots .dot2, .saving-dots .dot3 { animation: blink 1.2s infinite; }
-.saving-dots .dot2 { animation-delay: 0.2s; }
-.saving-dots .dot3 { animation-delay: 0.4s; }
-@keyframes blink { 0%, 80%, 100% { opacity: 0; } 40% { opacity: 1; } }
-
-.success-check { font-size: 1.05rem; font-weight: 700; }
-.cancel-text { font-size: 0.9rem; font-weight: 600; color: #ff3b30; cursor: pointer; }
-
 /* POPOVER */
-.photo-popover { --background: #ffffff; --min-width: 220px; --max-width: 260px; }
+.photo-popover { --background: #ffffff; --min-width: 260px; --max-width: 300px; }
 .popover-menu { padding: 10px; display: flex; flex-direction: column; gap: 6px; }
 .popover-item { width: 100%; text-align: left; padding: 10px 12px; border-radius: 12px; border: 1px solid #f0f0f0; background: #fff; font-family: 'Jost', sans-serif; font-weight: 600; font-size: 0.95rem; color: #000; cursor: pointer; }
 .popover-item:active { background: #f7f7f7; }
 .popover-item.danger { color: #ff3b30; border-color: rgba(255,59,48,0.25); }
 .popover-item.restore { color: #4f52ff; border-color: rgba(79,82,255,0.25); }
+
+.avatar-preset-btn {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  color: #4f52ff;
+  border-color: rgba(79,82,255,0.25);
+}
+.preset-arrow { font-size: 14px; color: #4f52ff; }
+
+/* GRID CON SCROLL HORIZONTAL */
+.preset-grid {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.35s ease;
+}
+
+.preset-grid.expanded {
+  max-height: 76px;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scrollbar-width: none;
+  padding-bottom: 4px;
+}
+
+.preset-grid.expanded::-webkit-scrollbar {
+  display: none;
+}
+
+.preset-grid-inner {
+  display: flex;
+  gap: 8px;
+  width: max-content;
+  padding: 2px 2px 4px;
+}
+
+.preset-option {
+  position: relative;
+  width: 52px;
+  height: 52px;
+  border-radius: 14px;
+  overflow: hidden;
+  cursor: pointer;
+  border: 2.5px solid transparent;
+  transition: border-color 0.2s ease, transform 0.15s ease;
+  flex-shrink: 0;
+}
+
+.preset-option img { width: 100%; height: 100%; object-fit: cover; }
+
+.preset-option.selected {
+  border-color: #4f52ff;
+  box-shadow: 0 0 0 2px rgba(79,82,255,0.25);
+}
+
+.preset-option:active { transform: scale(0.9); }
+
+.preset-check {
+  position: absolute;
+  inset: 0;
+  background: rgba(79,82,255,0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-size: 20px;
+}
+
+/* CONTRASEÑA */
+.password-section { border: 1.5px solid #f0f0f0; border-radius: 20px; overflow: hidden; transition: border-color 0.25s ease; }
+.password-section:has(.expanded) { border-color: #e0e0ff; }
+.password-toggle { width: 100%; display: flex; justify-content: space-between; align-items: center; padding: 16px 18px; background: #fafafa; border: none; cursor: pointer; font-family: 'Jost', sans-serif; transition: background 0.2s ease; }
+.password-toggle:active { background: #f0f0f5; }
+.password-toggle-left { display: flex; align-items: center; gap: 12px; }
+.password-icon-wrapper { width: 36px; height: 36px; background: #000; border-radius: 10px; display: flex; align-items: center; justify-content: center; color: #fff; font-size: 18px; flex-shrink: 0; }
+.password-toggle-left span { font-size: 0.95rem; font-weight: 700; color: #000; }
+.toggle-arrow { font-size: 18px; color: #aaa; transition: transform 0.3s ease; }
+.password-fields { max-height: 0; overflow: hidden; transition: max-height 0.4s ease; }
+.password-fields.expanded { max-height: 600px; }
+.password-fields-inner { display: flex; flex-direction: column; gap: 16px; padding: 20px 18px; border-top: 1px solid #f0f0f0; }
+.password-save-btn { --background: #4f52ff; --color: #fff; --border-radius: 14px; height: 50px; font-weight: 700; font-size: 0.95rem; margin-top: 4px; box-shadow: 0 6px 16px rgba(79,82,255,0.25); }
+.password-save-btn.btn-success { --background: #34c759; box-shadow: 0 6px 16px rgba(52,199,89,0.25); }
+.password-save-btn[disabled] { --background: #aaa; opacity: 1; }
+
+/* FOOTER */
+.footer-actions { display: flex; flex-direction: column; align-items: center; gap: 16px; margin-top: 10px; }
+.confirm-btn { --background: #000; --color: #fff; --border-radius: 18px; width: 100%; height: 58px; font-size: 1rem; font-weight: 700; box-shadow: 0 10px 20px rgba(0,0,0,0.1); }
+.confirm-btn.btn-success { --background: #34c759; box-shadow: 0 10px 20px rgba(52,199,89,0.25); }
+.confirm-btn[disabled] { --background: #ccc; box-shadow: none; }
+.saving-dots .dot1, .saving-dots .dot2, .saving-dots .dot3 { animation: blink 1.2s infinite; }
+.saving-dots .dot2 { animation-delay: 0.2s; }
+.saving-dots .dot3 { animation-delay: 0.4s; }
+@keyframes blink { 0%, 80%, 100% { opacity: 0; } 40% { opacity: 1; } }
+.success-check { font-size: 1.05rem; font-weight: 700; }
+.cancel-text { font-size: 0.9rem; font-weight: 600; color: #ff3b30; cursor: pointer; }
 </style>
