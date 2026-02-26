@@ -18,24 +18,52 @@
           </div>
 
           <div class="form-section">
+
+            <!-- EMAIL -->
             <div class="input-group">
               <label class="input-label">Email</label>
-              <ion-input
-                class="custom-login-input"
-                type="email"
-                placeholder="tu@correo.com"
-                v-model="email"
-              ></ion-input>
+              <div class="input-wrapper" :class="estadoEmail">
+                <ion-input
+                  class="custom-login-input"
+                  type="email"
+                  placeholder="tu@correo.com"
+                  v-model="email"
+                  @ion-blur="emailTocado = true"
+                ></ion-input>
+                <ion-icon
+                  v-if="emailTocado"
+                  :icon="emailValido ? checkmarkCircleOutline : closeCircleOutline"
+                  class="validation-icon"
+                  :class="estadoEmail"
+                ></ion-icon>
+              </div>
+              <p v-if="emailTocado && !emailValido" class="field-error">Introduce un email válido</p>
             </div>
 
+            <!-- CONTRASEÑA -->
             <div class="input-group">
               <label class="input-label">Contraseña</label>
-              <ion-input
-                class="custom-login-input"
-                type="password"
-                placeholder="••••••••"
-                v-model="password"
-              ></ion-input>
+              <div class="input-wrapper" :class="estadoPassword">
+                <ion-input
+                  class="custom-login-input"
+                  :type="mostrarPassword ? 'text' : 'password'"
+                  placeholder="••••••••"
+                  v-model="password"
+                  @ion-blur="passwordTocado = true"
+                ></ion-input>
+                <ion-icon
+                  :icon="mostrarPassword ? eyeOffOutline : eyeOutline"
+                  class="eye-icon"
+                  @click="mostrarPassword = !mostrarPassword"
+                ></ion-icon>
+                <ion-icon
+                  v-if="passwordTocado"
+                  :icon="passwordValido ? checkmarkCircleOutline : closeCircleOutline"
+                  class="validation-icon"
+                  :class="estadoPassword"
+                ></ion-icon>
+              </div>
+              <p v-if="passwordTocado && !passwordValido" class="field-error">Mínimo 6 caracteres</p>
             </div>
 
             <div class="options-row">
@@ -46,8 +74,18 @@
               <span class="forgot-link" @click="goToRegister">¿Olvidaste tu contraseña?</span>
             </div>
 
-            <ion-button expand="block" class="main-login-btn" @click="handleLogin">
-              Iniciar Sesión
+            <ion-button
+              expand="block"
+              class="main-login-btn"
+              :class="{ 'btn-success': loginExitoso }"
+              :disabled="cargando"
+              @click="handleLogin"
+            >
+              <span v-if="!cargando && !loginExitoso">Iniciar Sesión</span>
+              <span v-else-if="cargando" class="loading-text">
+                Iniciando sesión<span class="dot1">.</span><span class="dot2">.</span><span class="dot3">.</span>
+              </span>
+              <span v-else>✓ ¡Bienvenido!</span>
             </ion-button>
           </div>
 
@@ -77,9 +115,10 @@ import {
   IonPage, IonContent, IonButton, IonInput, IonIcon, IonCheckbox, IonLabel
 } from '@ionic/vue';
 import { 
-  arrowBackOutline, logoGoogle, logoFacebook, logoTwitter 
+  arrowBackOutline, logoGoogle, logoFacebook, logoTwitter,
+  eyeOutline, eyeOffOutline, checkmarkCircleOutline, closeCircleOutline
 } from 'ionicons/icons';
-import { ref } from 'vue';
+import { ref, computed } from 'vue';
 import { useRouter } from 'vue-router';
 import logoCubiertos from '@/assets/LogoCubiertos.png';
 
@@ -87,8 +126,40 @@ const router = useRouter();
 const email = ref('');
 const password = ref('');
 const rememberMe = ref(true);
+const emailTocado = ref(false);
+const passwordTocado = ref(false);
+const mostrarPassword = ref(false);
+const cargando = ref(false);
+const loginExitoso = ref(false);
 
-const handleLogin = () => router.push('/MainLogged');
+// Validaciones
+const emailValido = computed(() => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.value));
+const passwordValido = computed(() => password.value.length >= 6);
+
+const estadoEmail = computed(() => {
+  if (!emailTocado.value) return '';
+  return emailValido.value ? 'valid' : 'invalid';
+});
+
+const estadoPassword = computed(() => {
+  if (!passwordTocado.value) return '';
+  return passwordValido.value ? 'valid' : 'invalid';
+});
+
+const handleLogin = async () => {
+  emailTocado.value = true;
+  passwordTocado.value = true;
+  if (!emailValido.value || !passwordValido.value) return;
+
+  cargando.value = true;
+  await new Promise(resolve => setTimeout(resolve, 1500));
+  cargando.value = false;
+  loginExitoso.value = true;
+
+  await new Promise(resolve => setTimeout(resolve, 900));
+  router.push('/MainLogged');
+};
+
 const goToRegister = () => router.push('/Register');
 </script>
 
@@ -108,12 +179,7 @@ const goToRegister = () => router.push('/Register');
 }
 
 /* HEADER */
-.header-row {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 20px;
-}
+.header-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
 .back-btn { --color: #000; }
 .mini-logo { width: 50px; height: 50px; object-fit: contain; }
 .spacer { width: 48px; }
@@ -133,29 +199,83 @@ const goToRegister = () => router.push('/Register');
 
 /* FORM */
 .form-section { display: flex; flex-direction: column; gap: 20px; }
-.input-group { display: flex; flex-direction: column; gap: 8px; }
+.input-group { display: flex; flex-direction: column; gap: 6px; }
 .input-label { font-size: 0.8rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: #aaa; margin-left: 4px; }
 
+/* Input wrapper con validación */
+.input-wrapper {
+  display: flex;
+  align-items: center;
+  background: #f7f7f9;
+  border-radius: 16px;
+  border: 1.5px solid transparent;
+  padding-right: 12px;
+  transition: border-color 0.25s ease, background 0.25s ease, box-shadow 0.25s ease;
+}
+
+.input-wrapper:focus-within {
+  background: #fff;
+  border-color: #4f52ff;
+  box-shadow: 0 0 0 4px rgba(79, 82, 255, 0.1);
+}
+
+.input-wrapper.valid {
+  border-color: #34c759;
+  background: #f0fdf4;
+}
+
+.input-wrapper.invalid {
+  border-color: #ff3b30;
+  background: #fff5f5;
+}
+
 .custom-login-input {
-  --background: #f7f7f9;
+  --background: transparent;
   --border-radius: 16px;
   --padding-start: 18px;
   --color: #000;
   --placeholder-color: #aaa;
   height: 54px;
   font-weight: 500;
+  flex: 1;
 }
 
-.options-row {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  font-size: 0.85rem;
+.eye-icon {
+  font-size: 20px;
+  color: #aaa;
+  cursor: pointer;
+  padding: 4px;
+  margin-right: 4px;
+  transition: color 0.2s;
+}
+.eye-icon:active { color: #4f52ff; }
+
+.validation-icon {
+  font-size: 20px;
+  flex-shrink: 0;
+}
+.validation-icon.valid { color: #34c759; }
+.validation-icon.invalid { color: #ff3b30; }
+
+.field-error {
+  font-size: 0.78rem;
+  color: #ff3b30;
+  font-weight: 500;
+  padding-left: 4px;
+  margin: 0;
+  animation: fadeIn 0.2s ease;
 }
 
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.options-row { display: flex; justify-content: space-between; align-items: center; font-size: 0.85rem; }
 .remember-me { display: flex; align-items: center; gap: 8px; color: #555; }
 .forgot-link { font-weight: 600; color: #4f52ff; cursor: pointer; }
 
+/* BOTÓN */
 .main-login-btn {
   --background: #000;
   --color: #fff;
@@ -164,17 +284,35 @@ const goToRegister = () => router.push('/Register');
   font-weight: 700;
   margin-top: 10px;
   box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+  transition: --background 0.3s ease;
+}
+
+.main-login-btn.btn-success {
+  --background: #34c759;
+  box-shadow: 0 10px 20px rgba(52, 199, 89, 0.25);
+}
+
+.main-login-btn[disabled] {
+  --background: #555;
+  opacity: 1;
+}
+
+/* Animación puntos cargando */
+.loading-text .dot1,
+.loading-text .dot2,
+.loading-text .dot3 {
+  animation: blink 1.2s infinite;
+}
+.loading-text .dot2 { animation-delay: 0.2s; }
+.loading-text .dot3 { animation-delay: 0.4s; }
+
+@keyframes blink {
+  0%, 80%, 100% { opacity: 0; }
+  40% { opacity: 1; }
 }
 
 /* DIVIDER */
-.divider {
-  display: flex;
-  align-items: center;
-  gap: 15px;
-  margin: 30px 0;
-  color: #ccc;
-  font-size: 0.85rem;
-}
+.divider { display: flex; align-items: center; gap: 15px; margin: 30px 0; color: #ccc; font-size: 0.85rem; }
 .line { height: 1px; background: #eee; flex: 1; }
 
 /* SOCIAL */
@@ -196,7 +334,7 @@ const goToRegister = () => router.push('/Register');
 .footer-text { text-align: center; font-size: 0.9rem; color: #888; }
 .link { color: #4f52ff; font-weight: 700; cursor: pointer; }
 
-/* LANDSCAPE OPTIMIZATION */
+/* LANDSCAPE */
 @media (orientation: landscape) {
   .login-wrapper { flex-direction: row; align-items: center; gap: 20px; }
   .login-card { padding: 20px; }

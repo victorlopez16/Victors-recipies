@@ -58,8 +58,8 @@
         <section class="section last">
           <h2 class="section-title">Inspiración</h2>
           <div class="gallery-grid">
-            <img src="https://images.unsplash.com/photo-1557800636-894a64c1696f?q=80&w=500" class="gallery-img" />
-            <img src="https://images.unsplash.com/photo-1520013817300-1f4c1cb245ef?q=80&w=500" class="gallery-img" />
+            <img src="https://images.unsplash.com/photo-1593504049359-74330189a345?q=80&w=500" class="gallery-img" />
+            <img src="https://images.unsplash.com/photo-1604382354936-07c5d9983bd3?q=80&w=500" class="gallery-img" />
           </div>
         </section>
       </div>
@@ -87,8 +87,8 @@ import {
   IonButton, IonIcon, IonFooter, IonTabBar, IonTabButton, useIonRouter 
 } from '@ionic/vue';
 import { 
-  chevronBackOutline, heart, heartOutline, paperPlaneOutline, shareSocialOutline,
-  homeOutline, addCircleOutline, alertCircleOutline, searchOutline, 
+  chevronBackOutline, heart, paperPlaneOutline, shareSocialOutline,
+  homeOutline, addCircleOutline, alertCircleOutline, 
   checkmarkOutline, timeOutline 
 } from 'ionicons/icons';
 

@@ -18,28 +18,73 @@
           </div>
 
           <div class="form-section">
+
+            <!-- NUEVA CONTRASEÑA -->
             <div class="input-group">
               <label class="input-label">Contraseña</label>
-              <ion-input
-                class="custom-recovery-input"
-                type="password"
-                placeholder="••••••••"
-                v-model="newPassword"
-              ></ion-input>
+              <div class="input-wrapper" :class="estadoPassword">
+                <ion-input
+                  class="custom-recovery-input"
+                  :type="mostrarPassword ? 'text' : 'password'"
+                  placeholder="••••••••"
+                  v-model="newPassword"
+                  @ion-blur="passwordTocado = true"
+                ></ion-input>
+                <ion-icon
+                  :icon="mostrarPassword ? eyeOffOutline : eyeOutline"
+                  class="eye-icon"
+                  @click="mostrarPassword = !mostrarPassword"
+                ></ion-icon>
+                <ion-icon
+                  v-if="passwordTocado"
+                  :icon="passwordValido ? checkmarkCircleOutline : closeCircleOutline"
+                  class="validation-icon"
+                  :class="estadoPassword"
+                ></ion-icon>
+              </div>
+              <p v-if="passwordTocado && !passwordValido" class="field-error">Mínimo 6 caracteres</p>
             </div>
 
+            <!-- CONFIRMAR CONTRASEÑA -->
             <div class="input-group">
               <label class="input-label">Confirmar Contraseña</label>
-              <ion-input
-                class="custom-recovery-input"
-                type="password"
-                placeholder="••••••••"
-                v-model="confirmPassword"
-              ></ion-input>
+              <div class="input-wrapper" :class="estadoConfirm">
+                <ion-input
+                  class="custom-recovery-input"
+                  :type="mostrarConfirm ? 'text' : 'password'"
+                  placeholder="••••••••"
+                  v-model="confirmPassword"
+                  @ion-blur="confirmTocado = true"
+                ></ion-input>
+                <ion-icon
+                  :icon="mostrarConfirm ? eyeOffOutline : eyeOutline"
+                  class="eye-icon"
+                  @click="mostrarConfirm = !mostrarConfirm"
+                ></ion-icon>
+                <ion-icon
+                  v-if="confirmTocado"
+                  :icon="confirmValido ? checkmarkCircleOutline : closeCircleOutline"
+                  class="validation-icon"
+                  :class="estadoConfirm"
+                ></ion-icon>
+              </div>
+              <p v-if="confirmTocado && !confirmValido" class="field-error">
+                {{ confirmPassword.length === 0 ? 'Confirma tu contraseña' : 'Las contraseñas no coinciden' }}
+              </p>
             </div>
 
-            <ion-button expand="block" class="main-action-btn" @click="handleReset">
-              Actualizar Contraseña
+            <ion-button
+              expand="block"
+              class="main-action-btn"
+              :class="{ 'btn-success': actualizadoExitoso }"
+              :disabled="cargando"
+              @click="handleReset"
+            >
+              <span v-if="!cargando && !actualizadoExitoso">Actualizar Contraseña</span>
+              <span v-else-if="cargando" class="loading-text">
+                Actualizando<span class="dot1">.</span><span class="dot2">.</span><span class="dot3">.</span>
+              </span>
+              <span v-else>✓ ¡Contraseña actualizada!</span>
             </ion-button>
           </div>
 
@@ -69,20 +114,51 @@ import {
   IonPage, IonContent, IonButton, IonInput, IonIcon
 } from '@ionic/vue';
 import { 
-  arrowBackOutline, logoGoogle, logoFacebook, logoTwitter 
+  arrowBackOutline, logoGoogle, logoFacebook, logoTwitter,
+  eyeOutline, eyeOffOutline, checkmarkCircleOutline, closeCircleOutline
 } from 'ionicons/icons';
-import { ref } from 'vue';
+import { ref, computed } from 'vue';
 import { useRouter } from 'vue-router';
 import logoCubiertos from '@/assets/LogoCubiertos.png';
 
 const router = useRouter();
 const newPassword = ref('');
 const confirmPassword = ref('');
+const passwordTocado = ref(false);
+const confirmTocado = ref(false);
+const mostrarPassword = ref(false);
+const mostrarConfirm = ref(false);
+const cargando = ref(false);
+const actualizadoExitoso = ref(false);
 
-const handleReset = () => {
-  // Aquí iría la validación de que ambas coincidan
+// Validaciones
+const passwordValido = computed(() => newPassword.value.length >= 6);
+const confirmValido = computed(() => confirmPassword.value.length > 0 && confirmPassword.value === newPassword.value);
+
+const estadoPassword = computed(() => {
+  if (!passwordTocado.value) return '';
+  return passwordValido.value ? 'valid' : 'invalid';
+});
+
+const estadoConfirm = computed(() => {
+  if (!confirmTocado.value) return '';
+  return confirmValido.value ? 'valid' : 'invalid';
+});
+
+const handleReset = async () => {
+  passwordTocado.value = true;
+  confirmTocado.value = true;
+  if (!passwordValido.value || !confirmValido.value) return;
+
+  cargando.value = true;
+  await new Promise(resolve => setTimeout(resolve, 1500));
+  cargando.value = false;
+  actualizadoExitoso.value = true;
+
+  await new Promise(resolve => setTimeout(resolve, 900));
   router.push('/LoginPage');
 };
+
 const goToLogin = () => router.push('/LoginPage');
 </script>
 
@@ -102,12 +178,7 @@ const goToLogin = () => router.push('/LoginPage');
 }
 
 /* HEADER */
-.header-row {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 20px;
-}
+.header-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
 .back-btn { --color: #000; }
 .mini-logo { width: 50px; height: 50px; object-fit: contain; }
 .spacer { width: 48px; }
@@ -127,19 +198,75 @@ const goToLogin = () => router.push('/LoginPage');
 
 /* FORM */
 .form-section { display: flex; flex-direction: column; gap: 20px; }
-.input-group { display: flex; flex-direction: column; gap: 8px; }
+.input-group { display: flex; flex-direction: column; gap: 6px; }
 .input-label { font-size: 0.8rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: #aaa; margin-left: 4px; }
 
+.input-wrapper {
+  display: flex;
+  align-items: center;
+  background: #f7f7f9;
+  border-radius: 16px;
+  border: 1.5px solid transparent;
+  padding-right: 12px;
+  transition: border-color 0.25s ease, background 0.25s ease, box-shadow 0.25s ease;
+}
+
+.input-wrapper:focus-within {
+  background: #fff;
+  border-color: #4f52ff;
+  box-shadow: 0 0 0 4px rgba(79, 82, 255, 0.1);
+}
+
+.input-wrapper.valid {
+  border-color: #34c759;
+  background: #f0fdf4;
+}
+
+.input-wrapper.invalid {
+  border-color: #ff3b30;
+  background: #fff5f5;
+}
+
 .custom-recovery-input {
-  --background: #f7f7f9;
+  --background: transparent;
   --border-radius: 16px;
   --padding-start: 18px;
   --color: #000;
   --placeholder-color: #aaa;
   height: 54px;
   font-weight: 500;
+  flex: 1;
 }
 
+.eye-icon {
+  font-size: 20px;
+  color: #aaa;
+  cursor: pointer;
+  padding: 4px;
+  margin-right: 4px;
+  transition: color 0.2s;
+}
+.eye-icon:active { color: #4f52ff; }
+
+.validation-icon { font-size: 20px; flex-shrink: 0; }
+.validation-icon.valid { color: #34c759; }
+.validation-icon.invalid { color: #ff3b30; }
+
+.field-error {
+  font-size: 0.78rem;
+  color: #ff3b30;
+  font-weight: 500;
+  padding-left: 4px;
+  margin: 0;
+  animation: fadeIn 0.2s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* BOTÓN */
 .main-action-btn {
   --background: #000;
   --color: #fff;
@@ -150,15 +277,29 @@ const goToLogin = () => router.push('/LoginPage');
   box-shadow: 0 10px 20px rgba(0,0,0,0.1);
 }
 
-/* DIVIDER */
-.divider {
-  display: flex;
-  align-items: center;
-  gap: 15px;
-  margin: 30px 0;
-  color: #ccc;
-  font-size: 0.85rem;
+.main-action-btn.btn-success {
+  --background: #34c759;
+  box-shadow: 0 10px 20px rgba(52, 199, 89, 0.25);
 }
+
+.main-action-btn[disabled] {
+  --background: #555;
+  opacity: 1;
+}
+
+.loading-text .dot1,
+.loading-text .dot2,
+.loading-text .dot3 { animation: blink 1.2s infinite; }
+.loading-text .dot2 { animation-delay: 0.2s; }
+.loading-text .dot3 { animation-delay: 0.4s; }
+
+@keyframes blink {
+  0%, 80%, 100% { opacity: 0; }
+  40% { opacity: 1; }
+}
+
+/* DIVIDER */
+.divider { display: flex; align-items: center; gap: 15px; margin: 30px 0; color: #ccc; font-size: 0.85rem; }
 .line { height: 1px; background: #eee; flex: 1; }
 
 /* SOCIAL */
@@ -173,7 +314,9 @@ const goToLogin = () => router.push('/LoginPage');
   justify-content: center;
   font-size: 24px;
   color: #000;
+  transition: all 0.2s;
 }
+.social-item:active { background: #f9f9f9; transform: scale(0.95); }
 
 .footer-text { text-align: center; font-size: 0.9rem; color: #888; }
 .link { color: #4f52ff; font-weight: 700; cursor: pointer; }

@@ -116,6 +116,7 @@ const alerts = [
   font-size: 1.2rem; 
   letter-spacing: -0.5px;
   text-align: center;
+  color: #000;
 }
 
 .custom-back { color: #000 !important; }
@@ -131,7 +132,7 @@ const alerts = [
   font-size: 0.85rem;
   text-transform: uppercase;
   letter-spacing: 1.5px;
-  color: #aaa;
+  color: #000;
   font-weight: 600;
   margin: 25px 0 15px 5px;
 }

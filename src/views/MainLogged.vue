@@ -61,7 +61,6 @@
             class="recipe-item-card no-click" 
             v-for="(item, index) in listadoPrincipal" 
             :key="'list-' + index"
-            @click="null"
           >
             <div class="image-container">
               <img :src="item.image" :alt="item.title" />
@@ -81,33 +80,41 @@
 
     <ion-footer class="ion-no-border">
       <ion-tab-bar slot="bottom" class="custom-tab-bar">
-        <ion-tab-button>
+
+        <!-- Avatar → Perfil -->
+        <ion-tab-button @click="navegar('/Perfil')">
           <div class="avatar-wrapper">
             <img src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?q=80&w=100" alt="Profile" />
           </div>
         </ion-tab-button>
 
+        <!-- Chat -->
         <ion-tab-button @click="navegar('/Chat')">
           <ion-icon :icon="paperPlaneOutline"></ion-icon>
         </ion-tab-button>
 
-        <ion-tab-button @click="navegar('/')">
+        <!-- Home -->
+        <ion-tab-button @click="navegar('/MainLogged')">
           <div class="home-wrapper">
             <ion-icon :icon="homeOutline"></ion-icon>
           </div>
         </ion-tab-button>
 
-        <ion-tab-button>
+        <!-- Creador de recetas -->
+        <ion-tab-button @click="navegar('/CreadorRecetas')">
           <ion-icon :icon="addCircleOutline"></ion-icon>
         </ion-tab-button>
 
+        <!-- Alertas -->
         <ion-tab-button @click="navegar('/Alert')">
           <ion-icon :icon="alertCircleOutline"></ion-icon>
         </ion-tab-button>
 
-        <ion-tab-button @click="navegar('/Search')">
+        <!-- Búsqueda -->
+        <ion-tab-button @click="navegar('/SearchLogged')">
           <ion-icon :icon="searchOutline"></ion-icon>
         </ion-tab-button>
+
       </ion-tab-bar>
     </ion-footer>
   </ion-page>
@@ -128,8 +135,7 @@ import logoCubiertos from '@/assets/LogoCubiertos.png';
 import ArandanosGofres from '@/assets/ArandanosGofres.png';
 
 const router = useIonRouter();
-
-const navegar = (ruta: string) => router.navigate(ruta, 'forward', 'replace');
+const navegar = (ruta: string) => router.navigate(ruta, 'forward', 'push');
 
 const recetasSemanales = [
   { title: 'Pizza Margarita', image: 'https://images.unsplash.com/photo-1513104890138-7c749659a591?q=80&w=500' },
@@ -190,82 +196,27 @@ const listadoPrincipal = [
 
 .custom-tab-bar { --background: #fff; height: 75px; border-top: 1px solid #f0f0f0; }
 .custom-tab-bar ion-icon { color: black; font-size: 26px; }
-.avatar-wrapper { width: 30px; height: 30px; border-radius: 50%; overflow: hidden; border: 1px solid #000; }
+.avatar-wrapper { width: 30px; height: 30px; border-radius: 50%; overflow: hidden; border: 1px solid #000; cursor: pointer; }
 .avatar-wrapper img { width: 100%; height: 100%; object-fit: cover; }
 .home-wrapper { border: 2px solid #000; border-radius: 12px; padding: 4px 10px; display: flex; align-items: center; }
 
-/* ─── LANDSCAPE ─── */
 @media (orientation: landscape) and (max-height: 500px) {
-
-  /* Header más compacto */
-  .custom-header {
-    padding: 6px 16px 0;
-  }
-  .mini-logo {
-    width: 32px;
-    height: 32px;
-  }
-
-  /* Tab bar más bajo */
-  .custom-tab-bar {
-    height: 52px;
-  }
-  .custom-tab-bar ion-icon {
-    font-size: 20px;
-  }
-  .avatar-wrapper {
-    width: 24px;
-    height: 24px;
-  }
-  .home-wrapper {
-    padding: 2px 8px;
-  }
-
-  /* Sección estática: en horizontal mostramos recetas y chips en una fila lateral */
-  .static-section {
-    padding: 6px 16px;
-  }
-  .section-title {
-    font-size: 1rem;
-    margin: 4px 0;
-  }
-
-  /* Las tarjetas mini se hacen más pequeñas */
-  .recipe-card-mini {
-    min-width: 90px;
-  }
-  .mini-card-img {
-    height: 60px;
-  }
-  .mini-card-title {
-    font-size: 0.75rem;
-    margin: 4px 0;
-  }
-
-  /* Chips más compactos */
-  .category-chip {
-    padding: 4px 14px;
-    font-size: 0.8rem;
-  }
-  .categories-scroll {
-    padding: 4px 0;
-  }
-
-  /* Tarjetas del listado más pequeñas */
-  .recipe-item-card {
-    height: 90px;
-    margin-bottom: 10px;
-  }
-  .recipe-info h3 {
-    font-size: 0.95rem;
-  }
-  .recipe-info p {
-    font-size: 0.72rem;
-    margin: 2px 0 6px;
-  }
-  .recipe-tag {
-    font-size: 0.6rem;
-    padding: 2px 8px;
-  }
+  .custom-header { padding: 6px 16px 0; }
+  .mini-logo { width: 32px; height: 32px; }
+  .custom-tab-bar { height: 52px; }
+  .custom-tab-bar ion-icon { font-size: 20px; }
+  .avatar-wrapper { width: 24px; height: 24px; }
+  .home-wrapper { padding: 2px 8px; }
+  .static-section { padding: 6px 16px; }
+  .section-title { font-size: 1rem; margin: 4px 0; }
+  .recipe-card-mini { min-width: 90px; }
+  .mini-card-img { height: 60px; }
+  .mini-card-title { font-size: 0.75rem; margin: 4px 0; }
+  .category-chip { padding: 4px 14px; font-size: 0.8rem; }
+  .categories-scroll { padding: 4px 0; }
+  .recipe-item-card { height: 90px; margin-bottom: 10px; }
+  .recipe-info h3 { font-size: 0.95rem; }
+  .recipe-info p { font-size: 0.72rem; margin: 2px 0 6px; }
+  .recipe-tag { font-size: 0.6rem; padding: 2px 8px; }
 }
 </style>
