@@ -155,7 +155,7 @@ import {
   bookmarkOutline, restaurantOutline,
   personAddOutline, checkmarkOutline
 } from 'ionicons/icons';
-import { ref, computed, onMounted } from 'vue';
+import { ref, computed } from 'vue'; // Quitamos onMounted porque ya no lo necesitamos
 import ArandanosGofres from '@/assets/ArandanosGofres.png';
 
 const ionRouter = useIonRouter();
@@ -163,7 +163,10 @@ const navegarAtras = () => ionRouter.canGoBack() ? ionRouter.back() : ionRouter.
 const navegar = (ruta: string) => ionRouter.navigate(ruta, 'forward', 'push');
 
 const pillActiva = ref<'recetas' | 'guardadas'>('recetas');
-const cargando = ref(true);
+
+// ✅ CAMBIO CLAVE: Cambiamos true por false para que no empiece cargando
+const cargando = ref(false); 
+
 const siguiendo = ref(false);
 const seguidores = ref(850);
 
@@ -172,14 +175,9 @@ const toggleSeguir = () => {
   seguidores.value += siguiendo.value ? 1 : -1;
 };
 
-onMounted(() => {
-  setTimeout(() => { cargando.value = false; }, 1500);
-});
-
+// ✅ CAMBIO CLAVE: Simplificamos el cambio de pestaña para que sea instantáneo
 const cambiarPill = (pill: 'recetas' | 'guardadas') => {
-  cargando.value = true;
   pillActiva.value = pill;
-  setTimeout(() => { cargando.value = false; }, 800);
 };
 
 const recetas = [

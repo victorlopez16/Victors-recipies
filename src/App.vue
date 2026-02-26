@@ -1,6 +1,6 @@
 <template>
   <ion-app>
-    <ion-router-outlet :animated="true" />
+    <ion-router-outlet :animated="true" animation="slide" />
   </ion-app>
 </template>
 

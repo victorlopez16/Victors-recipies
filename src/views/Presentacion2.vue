@@ -6,41 +6,43 @@
         <div class="blob-decorator-alt"></div>
 
         <div class="main-body">
-          <div class="illustration-box">
+
+          <div class="illustration-box anim-item" :class="{ visible: animado }" style="--delay: 0s">
             <img
-              class="main-img"
+              class="main-img floating"
               :src="imagePresentacion2"
               alt="Comparte tus recetas"
             />
+            <div class="image-shadow"></div>
             <div class="glow-effect"></div>
           </div>
 
           <div class="text-content">
-            <h1 class="feature-title">Tu toque personal</h1>
-            <p class="feature-desc">
+            <h1 class="feature-title anim-item" :class="{ visible: animado }" style="--delay: 0.2s">
+              Tu toque personal
+            </h1>
+            <p class="feature-desc anim-item" :class="{ visible: animado }" style="--delay: 0.35s">
               ¿Tienes una receta familiar secreta? <strong>¡Es hora de brillar!</strong> Sube tus propias creaciones y compártelas con el mundo.
             </p>
           </div>
         </div>
 
-        <footer class="presentation-footer">
+        <footer class="presentation-footer anim-item" :class="{ visible: animado }" style="--delay: 0.5s">
           <div class="step-indicator">
             <div class="dot"></div>
             <div class="dot active"></div>
             <div class="dot"></div>
           </div>
 
-          <div class="button-group">
-            <ion-button
-              expand="block"
-              class="main-btn"
-              @click="handleContinue"
-            >
-              Continuar
-            </ion-button>
-            <button class="skip-link" @click="handleContinue">Omitir</button>
-          </div>
+          <ion-button
+            expand="block"
+            class="main-btn"
+            @click="handleContinue"
+          >
+            Continuar
+          </ion-button>
         </footer>
+
       </div>
     </ion-content>
   </ion-page>
@@ -49,11 +51,17 @@
 <script setup lang="ts">
 import { IonPage, IonContent, IonButton, useIonRouter } from '@ionic/vue'
 import imagePresentacion2 from '@/assets/ImagePresentacion2.png'
+import { ref, onMounted } from 'vue'
 
 const ionRouter = useIonRouter()
+const animado = ref(false)
+
+onMounted(() => {
+  setTimeout(() => { animado.value = true }, 100)
+})
 
 const handleContinue = () => {
-  ionRouter.navigate('/MainNoLogged', 'forward', 'replace');
+  ionRouter.navigate('/MainNoLogged', 'forward', 'replace')
 }
 </script>
 
@@ -70,7 +78,7 @@ const handleContinue = () => {
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  padding: 40px 24px;
+  padding: 80px 24px 60px;
   position: relative;
   overflow: hidden;
 }
@@ -85,6 +93,19 @@ const handleContinue = () => {
   z-index: 0;
 }
 
+/* ANIMACIÓN DE ENTRADA */
+.anim-item {
+  opacity: 0;
+  transform: translateY(28px);
+  transition: opacity 0.6s ease, transform 0.6s ease;
+  transition-delay: var(--delay, 0s);
+}
+
+.anim-item.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
 .main-body {
   flex: 1;
   display: flex;
@@ -94,6 +115,7 @@ const handleContinue = () => {
   z-index: 1;
 }
 
+/* IMAGEN CON FLOTACIÓN */
 .illustration-box {
   position: relative;
   margin-bottom: 40px;
@@ -103,10 +125,36 @@ const handleContinue = () => {
 
 .main-img {
   width: 100%;
-  max-width: 300px;
+  max-width: 280px;
   height: auto;
   z-index: 2;
   filter: drop-shadow(0 15px 25px rgba(0,0,0,0.08));
+}
+
+.floating {
+  animation: flotar 3.5s ease-in-out infinite;
+}
+
+@keyframes flotar {
+  0%, 100% { transform: translateY(0px); }
+  50%       { transform: translateY(-12px); }
+}
+
+.image-shadow {
+  position: absolute;
+  bottom: 0px;
+  left: 10%;
+  width: 80%;
+  height: 20px;
+  background: rgba(0,0,0,0.05);
+  filter: blur(10px);
+  border-radius: 50%;
+  animation: sombra 3.5s ease-in-out infinite;
+}
+
+@keyframes sombra {
+  0%, 100% { transform: scaleX(1);    opacity: 0.5; }
+  50%       { transform: scaleX(0.8); opacity: 0.25; }
 }
 
 .glow-effect {
@@ -120,6 +168,7 @@ const handleContinue = () => {
   z-index: 1;
 }
 
+/* TEXTO */
 .text-content {
   text-align: center;
   max-width: 320px;
@@ -144,18 +193,20 @@ const handleContinue = () => {
   font-weight: 600;
 }
 
-/* FOOTER UNIFICADO */
+/* FOOTER */
 .presentation-footer {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 25px;
+  gap: 30px;
   z-index: 1;
 }
 
+/* DOTS ANIMADOS */
 .step-indicator {
   display: flex;
   gap: 8px;
+  align-items: center;
 }
 
 .dot {
@@ -163,23 +214,22 @@ const handleContinue = () => {
   height: 8px;
   background: #e5e5e5;
   border-radius: 50%;
-  transition: all 0.3s ease;
+  transition: width 0.4s ease, border-radius 0.4s ease, background 0.4s ease;
 }
 
 .dot.active {
-  width: 24px;
+  width: 28px;
   background: #000;
-  border-radius: 10px;
+  border-radius: 4px;
+  animation: dotPulse 2s ease-in-out infinite;
 }
 
-.button-group {
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 15px;
+@keyframes dotPulse {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.6; }
 }
 
+/* BOTÓN */
 .main-btn {
   --background: #000;
   --color: #fff;
@@ -189,15 +239,18 @@ const handleContinue = () => {
   max-width: 340px;
   font-weight: 700;
   font-size: 1.1rem;
-  box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+  animation: pulso 2.5s ease-in-out infinite;
+  animation-delay: 1.2s;
 }
 
-.skip-link {
-  background: none;
-  border: none;
-  color: #999;
-  font-size: 0.95rem;
-  font-weight: 500;
-  padding: 5px;
+@keyframes pulso {
+  0%, 100% {
+    box-shadow: 0 10px 20px rgba(0,0,0,0.15);
+    transform: scale(1);
+  }
+  50% {
+    box-shadow: 0 14px 28px rgba(0,0,0,0.25);
+    transform: scale(1.02);
+  }
 }
 </style>

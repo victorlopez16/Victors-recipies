@@ -172,30 +172,28 @@
 import {
   IonPage, IonHeader, IonToolbar, IonButtons, IonButton,
   IonIcon, IonContent, IonFooter, IonTabBar, IonTabButton, useIonRouter
-} from '@ionic/vue';
+} from '@ionic/vue'; // ✅ Corregido @ionic/vue
 import {
   chevronBackOutline, heartOutline, paperPlaneOutline,
   homeOutline, addCircleOutline, alertCircleOutline, searchOutline,
   logOutOutline, ellipsisHorizontal, bookmarkOutline, restaurantOutline
 } from 'ionicons/icons';
-import { ref, computed, onMounted } from 'vue';
+import { ref, computed } from 'vue';
 import ArandanosGofres from '@/assets/ArandanosGofres.png';
 
+// ✅ Lógica de navegación adaptada
 const ionRouter = useIonRouter();
-const navegarAtras = () => ionRouter.back();
+const navegarAtras = () => ionRouter.canGoBack() ? ionRouter.back() : ionRouter.navigate('/MainLogged', 'back', 'replace');
 const navegar = (ruta: string) => ionRouter.navigate(ruta, 'forward', 'push');
 
 const pillActiva = ref<'recetas' | 'guardadas'>('recetas');
-const cargando = ref(true);
 
-onMounted(() => {
-  setTimeout(() => { cargando.value = false; }, 1500);
-});
+// ✅ Cargando en false para mostrar recetas al instante
+const cargando = ref(false);
 
+// ✅ Cambio de pestaña instantáneo
 const cambiarPill = (pill: 'recetas' | 'guardadas') => {
-  cargando.value = true;
   pillActiva.value = pill;
-  setTimeout(() => { cargando.value = false; }, 800);
 };
 
 const recetas = [

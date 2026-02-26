@@ -265,7 +265,7 @@ const guardando = ref(false);
 const guardadoExitoso = ref(false);
 
 // Foto
-const defaultPhoto = 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?q=80&w=300';
+const defaultPhoto = 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?q=80&w=300';
 const photoUrl = ref<string>(defaultPhoto);
 const fileInputRef = ref<HTMLInputElement | null>(null);
 const cameraInputRef = ref<HTMLInputElement | null>(null);
